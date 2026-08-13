@@ -3,147 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>醫策會 TPR 病安通報 QA 速查網頁</title>
+    <title>TPR 病安通報 QA 速查系統</title>
     <style>
         :root {
-            --primary-color: #0056b3;
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #333;
+            /* 依據貴院 Logo 量身打造的質感配色 */
+            --primary-color: #E87461;       /* 品牌主色：溫暖珊瑚橘 */
+            --primary-hover: #d65f4c;       /* 懸浮色：深珊瑚橘 */
+            --secondary-color: #72777A;     /* 次要色：沉穩灰 */
+            --bg-color: #fcfbfa;            /* 背景：極柔和暖白 */
+            --card-bg: #ffffff;             /* 卡片背景：純白 */
+            --text-main: #2d3135;           /* 主要文字：深灰黑 */
+            --text-muted: #72777A;          /* 次要文字：霧灰 */
+            --border-color: #e2e4e6;        /* 邊框色 */
+            --tag-bg: #f2f4f5;              /* 按鈕預設背景 */
+            --accent-green: #2f855a;        /* 答題專用：沉穩綠 */
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 30px 20px;
             display: flex;
             justify-content: center;
         }
 
         .container {
             width: 100%;
-            max-width: 980px;
+            max-width: 960px;
         }
 
+        /* 標題與 Logo 區塊 */
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 28px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .hospital-logo-svg {
+            height: 46px;
+            width: auto;
         }
 
         h1 {
-            color: var(--primary-color);
-            margin-bottom: 6px;
+            color: #2d3135;
+            margin: 0;
             font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         p.subtitle {
-            color: #666;
-            font-size: 0.95rem;
-            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-top: 6px;
         }
 
+        /* 搜尋與篩選區塊 */
         .search-box {
             background: var(--card-bg);
-            padding: 18px 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            padding: 22px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 12px 15px;
-            font-size: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.98rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
             box-sizing: border-box;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.2s;
+            color: var(--text-main);
         }
 
         input[type="text"]:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(232, 116, 97, 0.15);
         }
 
         .filter-container {
-            margin-top: 14px;
+            margin-top: 16px;
         }
 
         .filter-label {
-            font-size: 0.88rem;
-            font-weight: bold;
-            color: #555;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
             margin-bottom: 10px;
         }
 
         .filter-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
         }
 
         .tag-btn {
-            background: #e9ecef;
-            border: 1px solid #ced4da;
-            padding: 6px 12px;
+            background: var(--tag-bg);
+            border: 1px solid #d1d5db;
+            padding: 6px 14px;
             border-radius: 6px;
-            font-size: 0.88rem;
-            color: #495057;
+            font-size: 0.85rem;
+            color: #4b5563;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease-in-out;
         }
 
         .tag-btn:hover {
-            background: #dee2e6;
+            background: #e5e7eb;
+            color: var(--text-main);
         }
 
         .tag-btn.active {
             background: var(--primary-color);
-            color: white;
+            color: #ffffff;
             border-color: var(--primary-color);
-            font-weight: bold;
+            font-weight: 600;
         }
 
+        /* QA 列表 */
         .qa-list {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 16px;
         }
 
         .qa-card {
             background: var(--card-bg);
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
             border-left: 5px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             display: none; /* 預設全隱藏 */
         }
 
         .qa-card.no-report {
-            border-left-color: #6c757d;
+            border-left-color: var(--secondary-color);
         }
 
         .category-badge {
             display: inline-block;
-            background: #e7f1ff;
-            color: var(--primary-color);
+            background: #fdf0ed;
+            color: var(--primary-hover);
             font-size: 0.78rem;
-            font-weight: bold;
-            padding: 3px 8px;
+            font-weight: 600;
+            padding: 3px 10px;
             border-radius: 4px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #f9d8d2;
         }
 
         .question {
-            font-weight: bold;
-            font-size: 1.05rem;
-            color: #1a252f;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-main);
             margin-bottom: 12px;
             display: flex;
             align-items: flex-start;
-            gap: 8px;
+            gap: 10px;
+            line-height: 1.5;
         }
 
         .question::before {
@@ -152,40 +184,45 @@
             color: white;
             font-size: 0.75rem;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 3px;
             height: fit-content;
             margin-top: 2px;
             flex-shrink: 0;
+            font-weight: normal;
         }
 
         .answer {
-            color: #444;
+            color: #4b5563;
             line-height: 1.6;
-            background: #f8f9fa;
-            padding: 12px 15px;
+            background: #f9fafb;
+            padding: 12px 16px;
             border-radius: 6px;
+            border: 1px solid #f3f4f6;
             display: flex;
             align-items: flex-start;
-            gap: 8px;
+            gap: 10px;
+            font-size: 0.95rem;
         }
 
         .answer::before {
             content: "答";
-            background: #28a745;
+            background: var(--accent-green);
             color: white;
             font-size: 0.75rem;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 3px;
             height: fit-content;
             margin-top: 2px;
             flex-shrink: 0;
+            font-weight: normal;
         }
 
         .no-result {
             text-align: center;
-            color: #888;
+            color: var(--text-muted);
             padding: 40px;
             display: none;
+            font-size: 0.95rem;
         }
     </style>
 </head>
@@ -193,7 +230,24 @@
 
 <div class="container">
     <header>
-        <h1>醫策會 TPR 病安通報 QA 速查網頁</h1>
+        <div class="logo-container">
+            <!-- 貴院專屬 Logo (SVG 原生繪製) -->
+            <svg class="hospital-logo-svg" viewBox="0 0 500 320" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" stroke-width="32" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- 左心（灰色） -->
+                    <path stroke="#8A8A8A" d="M 230,225 C 190,265 140,290 100,260 C 30,210 10,120 80,60 C 130,20 190,40 220,90 C 230,110 235,130 235,145" />
+                    <path stroke="#8A8A8A" d="M 100,260 C 60,230 45,180 65,130 C 85,80 140,55 190,75 C 220,88 235,115 235,145" />
+                    <!-- 右心（橘紅） -->
+                    <path stroke="#E87461" d="M 265,100 C 305,60 355,35 395,65 C 465,115 485,205 415,265 C 365,305 305,285 275,235 C 265,215 260,195 260,180" />
+                    <path stroke="#E87461" d="M 395,65 C 435,95 450,145 430,195 C 410,245 355,270 305,250 C 275,237 260,210 260,180" />
+                </g>
+                <!-- 中央十字鏈結點 -->
+                <rect x="185" y="138" width="42" height="42" fill="#E87461" />
+                <rect x="268" y="138" width="42" height="42" fill="#8A8A8A" />
+                <rect x="227" y="138" width="41" height="42" fill="#FFFFFF" />
+            </svg>
+            <h1>病安通報 TPR QA 速查系統</h1>
+        </div>
         <p class="subtitle">依醫策會 TPR 13 大官方事件類別與常見疑義整理</p>
     </header>
 
@@ -268,7 +322,7 @@
 
         <!-- Q7 -->
         <div class="qa-card no-report" data-category="不需通報">
-            <span class="category-badge" style="background:#e2e3e5; color:#383d41;">不需通報 / 非TPR範疇</span>
+            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">不需通報 / 非TPR範疇</span>
             <div class="question">醫療處置紀錄單遭同仁冒用姓名是否該通報？如須通報應通報何種異常事件？</div>
             <div class="answer">根據描述，建議內部溝通改善即可，不需通報至TPR。</div>
         </div>
@@ -303,7 +357,7 @@
 
         <!-- Q12 -->
         <div class="qa-card no-report" data-category="不需通報">
-            <span class="category-badge" style="background:#e2e3e5; color:#383d41;">不需通報 / 非TPR範疇</span>
+            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">不需通報 / 非TPR範疇</span>
             <div class="question">病人需緊急使用後線抗癲癇藥物 Briviact，因院內未常備該藥品需辦理急採，可能造成治療延遲。此類事件是否屬於病人安全事件收案範疇？</div>
             <div class="answer">本案因非常備藥品且需辦理緊急採購後始能取得，屬藥品配置及供應機制管理，未涉及醫療照護過程中之異常事件，因此不屬 TPR 病人安全事件收案範疇。</div>
         </div>
@@ -324,7 +378,7 @@
 
         <!-- Q15 -->
         <div class="qa-card no-report" data-category="不需通報">
-            <span class="category-badge" style="background:#e2e3e5; color:#383d41;">不需通報 / 非TPR範疇</span>
+            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">不需通報 / 非TPR範疇</span>
             <div class="question">病房協助病人掛號牙科門診，但牙科現場表示不接受該掛號方式需重新抽牌，系統與現場作業不一致導致病人無法如期就診。請問是否需通報？</div>
             <div class="answer">院內掛號系統設定與牙科門診作業流程不一致，屬行政流程及系統管理問題，不須通報至 TPR。</div>
         </div>
@@ -338,7 +392,7 @@
 
         <!-- Q17 -->
         <div class="qa-card no-report" data-category="不需通報">
-            <span class="category-badge" style="background:#e2e3e5; color:#383d41;">不需通報 / 非TPR範疇</span>
+            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">不需通報 / 非TPR範疇</span>
             <div class="question">病人至院外散步，因人行道高低差踩空擦傷。請問此事件是否須通報至 TPR？</div>
             <div class="answer">病人在非醫療照護環境中發生的跌倒情況，因院外環境無法改善，不須通報 TPR。</div>
         </div>
@@ -394,7 +448,7 @@
 
         <!-- Q25 -->
         <div class="qa-card no-report" data-category="治安事件 不需通報">
-            <span class="category-badge" style="background:#e2e3e5; color:#383d41;">治安事件 (不需通報 / 非TPR範疇)</span>
+            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">治安事件 (不需通報 / 非TPR範疇)</span>
             <div class="question">病人家屬在等候區被陌生男子以幫忙買特效藥膏為由詐騙 3200 元，請問是否須通報至 TPR？</div>
             <div class="answer">詐騙家屬案件不符合病人安全異常事件的定義，不在 TPR 通報範疇內。</div>
         </div>
@@ -431,7 +485,7 @@
     const noResult = document.getElementById('noResult');
     const tagBtns = document.querySelectorAll('.tag-btn');
 
-    let currentCategory = 'none'; // 預設進來不自動觸發任何類別
+    let currentCategory = 'none';
 
     searchInput.addEventListener('input', () => {
         filterQA();
@@ -439,11 +493,8 @@
 
     function selectCategory(category, btn) {
         currentCategory = category;
-        
-        // 切換按鈕的高亮狀態
         tagBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
         filterQA();
     }
 
@@ -451,7 +502,6 @@
         const query = searchInput.value.toLowerCase().trim();
         let visibleCount = 0;
 
-        // 若沒有輸入任何文字，且沒有點擊任何按鈕（或當前是初始未選擇狀態），則全部隱藏保持空白
         if (query === '' && currentCategory === 'none') {
             qaCards.forEach(card => card.style.display = 'none');
             noResult.style.display = 'none';
