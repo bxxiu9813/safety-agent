@@ -3,85 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>病安通報與事件判定速查系統</title>
+    <title>醫策會 TPR 病安通報 QA 速查網頁</title>
     <style>
-        body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-        h1 { color: #1a365d; text-align: center; margin-bottom: 8px; font-size: 24px; }
-        .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 20px; }
-        .search-box { width: 100%; padding: 12px 15px; font-size: 16px; border: 2px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; margin-bottom: 20px; outline: none; }
-        .search-box:focus { border-color: #3182ce; }
-        .card { background: #fafafa; border-left: 5px solid #3182ce; padding: 15px 20px; margin-bottom: 15px; border-radius: 4px; }
-        .card h3 { margin: 0 0 8px 0; color: #2b6cb0; font-size: 18px; }
-        .card p { margin: 5px 0; font-size: 14px; line-height: 1.5; }
-        .tag { display: inline-block; background: #e2e8f0; color: #4a5568; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 5px; }
-        .severity-low { border-left-color: #38a169; }
-        .severity-medium { border-left-color: #dd6b20; }
-        .severity-high { border-left-color: #e53e3e; }
+        :root {
+            --primary-color: #0056b3;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+        }
+
+        p.subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .search-box {
+            position: sticky;
+            top: 15px;
+            z-index: 100;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        .filter-tags {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-btn {
+            background: #e9ecef;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag-btn:hover, .tag-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .qa-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .qa-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .qa-card.no-report {
+            border-left-color: #6c757d; /* 不需通報顏色 */
+        }
+
+        .question {
+            font-weight: bold;
+            font-size: 1.05rem;
+            color: #1a252f;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .question::before {
+            content: "問";
+            background: var(--primary-color);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            height: fit-content;
+            margin-top: 2px;
+        }
+
+        .answer {
+            color: #444;
+            line-height: 1.6;
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .answer::before {
+            content: "答";
+            background: #28a745;
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            height: fit-content;
+            margin-top: 2px;
+        }
+
+        .no-result {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🏥 病人安全異常事件速查系統</h1>
-    <p class="subtitle">醫策會（TPR）通報標準與嚴重度等級快速判定</p>
+    <header>
+        <h1>醫策會 TPR 病安通報 QA 速查網頁</h1>
+        <p class="subtitle">收錄常考與實務異常事件判定疑義與官方回覆</p>
+    </header>
 
-    <!-- 關鍵字搜尋框 -->
-    <input type="text" id="searchInput" class="search-box" onkeyup="filterCards()" placeholder="🔍 輸入關鍵字搜尋（例如：跌倒、擦傷、骨折、管路、給藥...）">
-
-    <div id="cardList">
-        <!-- 案例 1 -->
-        <div class="card severity-low">
-            <span class="tag">跌倒事件</span><span class="tag">輕微傷</span>
-            <h3>病人跌倒照 X 光無骨折，僅輕微擦傷</h3>
-            <p><strong>判定嚴重度：</strong>輕傷（Mild）</p>
-            <p><strong>TPR 通報建議：</strong>需進行院內通報及 TPR 醫療不良事件通報。</p>
-            <p><strong>處置說明：</strong>予以傷口清潔消毒、給予冰敷，並加強防跌衛教與評估防跌措施。</p>
-        </div>
-
-        <!-- 案例 2 -->
-        <div class="card severity-high">
-            <span class="tag">跌倒事件</span><span class="tag">重傷</span>
-            <h3>病人家屬在浴室入口滑倒致肋骨骨折</h3>
-            <p><strong>判定嚴重度：</strong>重傷（Severe）</p>
-            <p><strong>TPR 通報建議：</strong>家屬/訪客於院區內發生之安全事件，亦屬於廣義病安通報範疇，需通報。</p>
-            <p><strong>處置說明：</strong>立即安排專科會診、完善影像檢查，並評估環境積水/防滑設施改善。</p>
-        </div>
-
-        <!-- 案例 3 -->
-        <div class="card severity-medium">
-            <span class="tag">管路事件</span><span class="tag">自拔/滑脫</span>
-            <h3>鼻胃管（NG Tube）不慎自拔或滑脫</h3>
-            <p><strong>判定嚴重度：</strong>跡近錯失（Near Miss）/ 輕傷</p>
-            <p><strong>TPR 通報建議：</strong>需進行通報，重新留置時須依規範進行位置確認（聽診/X光）。</p>
-            <p><strong>處置說明：</strong>評估病人意識與吞嚥狀況，固定貼布重新更換並檢討約束或約束替代方案。</p>
-        </div>
-
-        <!-- 案例 4 -->
-        <div class="card severity-low">
-            <span class="tag">藥物事件</span><span class="tag">給藥異常</span>
-            <h3>護理師給藥前核對發現劑量錯誤並即時攔截</h3>
-            <p><strong>判定嚴重度：</strong>跡近錯失（Near Miss）</p>
-            <p><strong>TPR 通報建議：</strong>建議通報（可作為三讀五對流程防護機制改善之參考）。</p>
-            <p><strong>處置說明：</strong>事件未影響病人，記錄於通報系統並探討開藥/藥局發藥/護理三讀五對之防禦漏洞。</p>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="搜尋關鍵字（例如：檢體、跌倒、抗生素、同意書、家屬）...">
+        <div class="filter-tags" id="filterTags">
+            <button class="tag-btn active" onclick="filterCategory('all')">全部</button>
+            <button class="tag-btn" onclick="filterCategory('跌倒')">跌倒事件</button>
+            <button class="tag-btn" onclick="filterCategory('檢查')">檢查/檢驗/病理切片</button>
+            <button class="tag-btn" onclick="filterCategory('藥物')">藥物事件</button>
+            <button class="tag-btn" onclick="filterCategory('手術')">手術事件</button>
+            <button class="tag-btn" onclick="filterCategory('照護')">醫療照護事件</button>
+            <button class="tag-btn" onclick="filterCategory('公共')">公共意外/環境</button>
+            <button class="tag-btn" onclick="filterCategory('不需通報')">不需通報</button>
         </div>
     </div>
+
+    <div class="qa-list" id="qaList">
+
+        <!-- Q1 -->
+        <div class="qa-card" data-category="檢查">
+            <div class="question">病人行下鼻甲腫塊手術時，術中切下的組織標本送驗，但後來發現送出的標本無法確定是否為當初指定送檢的檢體，請問嚴重度該如何判斷？</div>
+            <div class="answer">若造成重新採檢之事件，對病人健康的影響程度至少為『輕度』；若此檢體無法再取得(病人組織切片)、取得不易(腦脊髓液)或是再採之檢體(飯前血糖)品質無法等同前一次之檢體遺失，則依據是否對病情延遲診斷或後續處置的影響程度判定嚴重度。</div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="qa-card" data-category="檢查">
+            <div class="question">單位欲傳送檢體，下單系統時下錯任務別，導致檢體延遲送檢，該歸類為「其他事件」還是「檢查/檢驗/病理切片」事件？</div>
+            <div class="answer">請通報「檢查檢驗病理切片事件」，發生階段(可複選)->採檢/送檢階段->勾選「檢體延遲送檢」及其他：說明下單系統時人為因素下錯任務別。</div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="qa-card" data-category="跌倒">
+            <div class="question">病人原坐在椅子上，慢慢暈倒滑落地上，此事件需要通報TPR嗎？如果需要應歸類於什麼事件？</div>
+            <div class="answer">請通報「跌倒事件」，並依實際造成病人跌倒的原因勾選。</div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="qa-card" data-category="檢查">
+            <div class="question">開刀房送同一病人檢病理切片檢體兩件，兩檢體罐標籤互換貼錯 => 該歸類為檢查檢驗病理切片事件還是手術事件？</div>
+            <div class="answer">通報至「檢查檢驗事件」→ 勾選「事件發生階段」→「採檢/送檢階段」→「標籤錯誤」，並依實際狀況評估填寫。</div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="qa-card" data-category="檢查 手術">
+            <div class="question">手術中檢體遺失該歸類為手術事件還是檢查檢驗病理切片事件？若屬於手術事件，檢體該如何判斷應歸類為手術事件還是檢驗檢查病理切片事件？</div>
+            <div class="answer">依據台灣病安通報系統 Q&A -> 檢查檢驗 NO.L001，此事件請通報為「檢查/檢驗/病理切片事件」，事件發生階段請勾選『採檢/送檢階段/檢體遺失或損毀』。建議機構也在手術流程中改善，例如術前即在手術室備好檢體留存之器具。</div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="qa-card" data-category="藥物">
+            <div class="question">病人感染性心內膜炎，細菌血症QD使用抗生素治療，手術當日主護早上的抗生素沒給，未交給麻醉科給藥或詢問主治醫師是否要給藥或停藥，病人於未打抗生素狀況進行長時間手術。請問此事件該歸類為藥物事件或醫療照護事件？</div>
+            <div class="answer">請通報至「藥物事件」/遺漏給藥。</div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="qa-card no-report" data-category="不需通報">
+            <div class="question">醫療處置紀錄單遭同仁冒用姓名是否該通報？如須通報應通報何種異常事件？</div>
+            <div class="answer">根據描述，建議內部溝通改善即可，不需通報至TPR。</div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="qa-card" data-category="通報原則">
+            <div class="question">通報事件中此類事件再次發生的頻率是以事件類別（如：跌倒事件發生的頻率）做判斷，還是以事件類型（如：因"踩到拖鞋"跌倒的頻率）做判斷？</div>
+            <div class="answer">此類事件再次發生的可能情形（意指本次事件"依情境與經驗"評估可能再發生的機會）；例如通報跌倒事件：病人因服藥後產生暈眩下床上廁所發生跌倒，類似此情況再次發生的機會？會因過往經驗發生的頻率為參考。</div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="qa-card" data-category="跌倒 家屬">
+            <div class="question">若"病人家屬"在浴室入口處滑倒，至急診求診後，發現左側肋骨斷掉一根（未開刀），傷害程度應如何判定？</div>
+            <div class="answer">此事件發生對象為家屬，無法評估傷害程度。相關 QA 請檢視病人安全資訊網 Q&A 編號：F010。</div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="qa-card" data-category="檢查">
+            <div class="question">病人拿著檢查單要來照 KUB X-Ray，詢問病人的姓名，發現病人手上拿的檢查單是 B 這個病人的檢查單，致電診間後確認給錯檢查單張，請問此事件該歸類至何種事件類別？</div>
+            <div class="answer">請通報至檢查/檢驗/病理切片事件 -> 檢查(驗)單交付錯誤。</div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="qa-card" data-category="跌倒 範圍">
+            <div class="question">病人欲至門診看診，機車停在私人機車場，走至門診機車入口之慢車道時跌倒，請問此範圍是否歸屬於院內區域，是否需進行通報？</div>
+            <div class="answer">需先釐清「病人跌倒之慢車道，是否屬醫院院區範圍或由醫院負責管理維護？」若跌倒事件發生於醫院可管理、可改善之環境，則屬 TPR 通報範圍。</div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="qa-card no-report" data-category="不需通報 藥物">
+            <div class="question">病人需緊急使用後線抗癲癇藥物 Briviact，因院內未常備該藥品需辦理急採，可能造成治療延遲。此類事件是否屬於病人安全事件收案範疇？</div>
+            <div class="answer">本案因非常備藥品且需辦理緊急採購後始能取得，屬藥品配置及供應機制管理，未涉及醫療照護過程中之異常事件，因此不屬 TPR 病人安全事件收案範疇。</div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="qa-card" data-category="照護 檢查">
+            <div class="question">病人左肩脫臼復位後以三角巾固定，做右肩 CT 檢查時依指示雙上肢舉高，隨後左肩再次脫臼。請問此事件該歸類為何種事件類別？</div>
+            <div class="answer">建議通報為醫療照護事件，發生階段勾選「評估」->「未評估」及「處置、治療或照護」->「處置問題」，並依病人實際受傷害情形填報健康影響程度。</div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="qa-card" data-category="藥物">
+            <div class="question">無痛腸胃鏡給予 Propofol 鎮靜時發現 IV 注射部位腫脹外漏，現場立即停止並處理。請問此案件應歸類為何種類別？</div>
+            <div class="answer">請通報至藥物事件。</div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="qa-card no-report" data-category="不需通報 行政">
+            <div class="question">病房協助病人掛號牙科門診，但牙科現場表示不接受該掛號方式需重新抽牌，系統與現場作業不一致導致病人無法如期就診。請問是否需通報？</div>
+            <div class="answer">院內掛號系統設定與牙科門診作業流程不一致，屬行政流程及系統管理問題，不須通報至 TPR。</div>
+        </div>
+
+        <!-- Q16 -->
+        <div class="qa-card" data-category="手術">
+            <div class="question">手術室尚未準備完成就被通知病人已被醫師帶至術前，沒有經過刀房控台通知也沒有經急診交班，不符合標準流程。應歸類醫療照護還是手術事件？</div>
+            <div class="answer">建議通報至手術事件 / 發生階段：術前準備 / 類型：術前準備程序不完善。</div>
+        </div>
+
+        <!-- Q17 -->
+        <div class="qa-card no-report" data-category="不需通報 跌倒">
+            <div class="question">病人至院外散步，因人行道高低差踩空擦傷。請問此事件是否須通報至 TPR？</div>
+            <div class="answer">病人在非醫療照護環境中發生的跌倒情況，因院外環境無法改善，不須通報 TPR。</div>
+        </div>
+
+        <!-- Q18 -->
+        <div class="qa-card" data-category="照護 行政">
+            <div class="question">因排班資訊誤植，致使重大外傷機制時無法即時聯繫到值班醫師，請問此事件該歸類為其他事件或是醫療照護事件？</div>
+            <div class="answer">1. 若僅為單純排班資訊誤植，未影響到病人照護流程，屬行政/資訊面管理問題，建議機構內部檢討改善即可。<br>2. 若因此造成延誤急救、治療或緊急處置流程等情形，進而增加病人風險或已影響到病人照護，請通報至醫療照護事件。</div>
+        </div>
+
+        <!-- Q19 -->
+        <div class="qa-card" data-category="公共">
+            <div class="question">病房氧氣流量表掉下來打到病人的額頭，產生破皮傷口，請問此事件應歸類至何種事件？</div>
+            <div class="answer">此事件為設備物品固定不良與環境安全異常有關，建議通報至公共意外事件。</div>
+        </div>
+
+        <!-- Q20 -->
+        <div class="qa-card" data-category="手術 跌倒">
+            <div class="question">術中進行約15度床面傾斜時，約束帶疑似承受過大壓力彈開，導致病人自床上滑落。應歸類為手術事件或跌倒事件？</div>
+            <div class="answer">若一項事件跨兩個範疇時，請以對病人健康影響程度較嚴重者進行通報。</div>
+        </div>
+
+        <!-- Q21 -->
+        <div class="qa-card" data-category="公共 藥物">
+            <div class="question">病人接上化療藥後，化療藥物由 Bag 的加藥處滲漏出來。請問此事件該歸類為何種事件分類？</div>
+            <div class="answer">化療藥物滲漏若潑灑於地面，請通報至公共意外事件；若侷限於皮膚組織內，請通報至藥物事件。並請釐清是否有醫材不良的問題。</div>
+        </div>
+
+        <!-- Q22 -->
+        <div class="qa-card" data-category="手術 其他">
+            <div class="question">主護發現麻醉同意書已被簽署且簽署人非病人家屬。請問此事件該歸種事件？</div>
+            <div class="answer">若因同意書未填或填寫不完整導致手術中斷或延誤，造成治療或處置問題時，請通報至手術事件。若未牽涉治療處置（如不及時補簽未影響排程），建議通報至其他事件。</div>
+        </div>
+
+        <!-- Q23 -->
+        <div class="qa-card" data-category="檢查">
+            <div class="question">心電圖覆核報告註記高風險診斷（suspect Wellens syndrome），但未即時通知臨床團隊或已出院之病人。此案件該歸類於事件發生的哪個階段？</div>
+            <div class="answer">請通報至「檢查單位報告階段 → 報告延遲」。</div>
+        </div>
+
+        <!-- Q24 -->
+        <div class="qa-card" data-category="手術">
+            <div class="question">病人本次住院不需進行瘻管手術，但因門診舊有同意書存在，護理師無醫囑下被通知並將病人推至開刀房。應歸類為醫療照護事件還是手術事件？</div>
+            <div class="answer">請通報至手術事件 → 術前準備 → 術前準備程序不完善，並請依發生實際狀況進行填報。</div>
+        </div>
+
+        <!-- Q25 -->
+        <div class="qa-card no-report" data-category="不需通報">
+            <div class="question">病人家屬在等候區被陌生男子以幫忙買特效藥膏為由詐騙 3200 元，請問是否須通報至 TPR？</div>
+            <div class="answer">詐騙家屬案件不符合病人安全異常事件的定義，不在 TPR 通報範疇內。</div>
+        </div>
+
+        <!-- Q26 -->
+        <div class="qa-card" data-category="公共">
+            <div class="question">超商微波爐主機板故障導致冒煙觸動偵煙器，是否須通報？對病人影響程度該如何選擇？</div>
+            <div class="answer">若發生地點為照護病人之場域如配膳室、病房裡，且影響到病人造成傷害，請通報公共意外事件。</div>
+        </div>
+
+        <!-- Q27 -->
+        <div class="qa-card" data-category="公共">
+            <div class="question">病人於腹部 X 光檢查結束時，X 光機內定位燈泡破裂，碎屑掉落至病人身上及手上致輕微紅腫，應歸類為公共意外還是醫療照護事件？</div>
+            <div class="answer">建議通報至「公共意外事件」。</div>
+        </div>
+
+        <!-- Q28 -->
+        <div class="qa-card" data-category="跌倒 傷害">
+            <div class="question">精神科門診病人於藥局前趴倒在地、大吼大叫並用頭撞地板自殘，後續送急診，應歸類為何種事件？</div>
+            <div class="answer">可通報至跌倒事件或傷害行為事件，請依實際影響情形判定傷害程度，並以傷害程度較高者之事件類別進行通報即可。</div>
+        </div>
+
+    </div>
+
+    <div class="no-result" id="noResult">沒有找到符合關鍵字的問答。</div>
 </div>
 
 <script>
-function filterCards() {
-    let input = document.getElementById('searchInput').value.toLowerCase();
-    let cards = document.getElementsByClassName('card');
+    const searchInput = document.getElementById('searchInput');
+    const qaCards = document.querySelectorAll('.qa-card');
+    const noResult = document.getElementById('noResult');
+    const tagBtns = document.querySelectorAll('.tag-btn');
 
-    for (let i = 0; i < cards.length; i++) {
-        let text = cards[i].innerText.toLowerCase();
-        if (text.includes(input)) {
-            cards[i].style.display = "";
+    let currentCategory = 'all';
+
+    // 關鍵字搜尋
+    searchInput.addEventListener('input', filterQA);
+
+    function filterCategory(category) {
+        currentCategory = category;
+        tagBtns.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        filterQA();
+    }
+
+    function filterQA() {
+        const query = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        qaCards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            const category = card.getAttribute('data-category');
+
+            const matchesSearch = text.includes(query);
+            const matchesCategory = (currentCategory === 'all') || category.includes(currentCategory);
+
+            if (matchesSearch && matchesCategory) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        if (visibleCount === 0) {
+            noResult.style.display = 'block';
         } else {
-            cards[i].style.display = "none";
+            noResult.style.display = 'none';
         }
     }
-}
 </script>
 
 </body>
