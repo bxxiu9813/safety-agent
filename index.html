@@ -49,7 +49,7 @@
             top: 15px;
             z-index: 100;
             background: var(--card-bg);
-            padding: 16px;
+            padding: 18px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             margin-bottom: 20px;
@@ -71,14 +71,14 @@
         }
 
         .filter-container {
-            margin-top: 12px;
+            margin-top: 14px;
         }
 
         .filter-label {
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             font-weight: bold;
             color: #555;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .filter-tags {
@@ -90,9 +90,9 @@
         .tag-btn {
             background: #e9ecef;
             border: 1px solid #ced4da;
-            padding: 5px 12px;
+            padding: 6px 12px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             color: #495057;
             cursor: pointer;
             transition: all 0.2s;
@@ -121,6 +121,7 @@
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             border-left: 5px solid var(--primary-color);
+            display: none; /* 預設全部隱藏 */
         }
 
         .qa-card.no-report {
@@ -183,6 +184,16 @@
             flex-shrink: 0;
         }
 
+        .placeholder-text {
+            text-align: center;
+            color: #888;
+            padding: 50px 20px;
+            font-size: 1rem;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 2px dashed #e0e0e0;
+        }
+
         .no-result {
             text-align: center;
             color: #888;
@@ -205,23 +216,28 @@
         <div class="filter-container">
             <div class="filter-label">依醫策會 13 大通報類別篩選：</div>
             <div class="filter-tags" id="filterTags">
-                <button class="tag-btn active" onclick="filterCategory('all')">全部類別</button>
-                <button class="tag-btn" onclick="filterCategory('藥物事件')" title="與給藥過程相關之異常事件">1. 藥物事件</button>
-                <button class="tag-btn" onclick="filterCategory('跌倒事件')" title="因意外跌落至地面或其他平面">2. 跌倒事件</button>
-                <button class="tag-btn" onclick="filterCategory('手術事件')" title="在手術前、手術中、手術後過程中之異常事件">3. 手術事件</button>
-                <button class="tag-btn" onclick="filterCategory('輸血事件')" title="自醫囑開立備血及輸血過程相關之異常事件">4. 輸血事件</button>
-                <button class="tag-btn" onclick="filterCategory('醫療照護事件')" title="醫療、治療及照護措施相關之異常事件">5. 醫療照護事件</button>
-                <button class="tag-btn" onclick="filterCategory('公共意外事件')" title="醫院建築物、通道、火災、天災、資訊系統當機等相關事件">6. 公共意外事件</button>
-                <button class="tag-btn" onclick="filterCategory('治安事件')" title="偷竊、騷擾、病人失蹤、侵犯、他殺…等事件">7. 治安事件</button>
-                <button class="tag-btn" onclick="filterCategory('傷害行為事件')" title="言語衝突、身體攻擊、自殺/企圖自殺、自傷…等事件">8. 傷害行為事件</button>
-                <button class="tag-btn" onclick="filterCategory('管路事件')" title="任何管路滑脫、自拔、錯接、阻塞及未開啟事件">9. 管路事件</button>
-                <button class="tag-btn" onclick="filterCategory('院內不預期心跳停止事件')" title="非原疾病病程可預期之心跳停止事件">10. 院內不預期心跳停止事件</button>
-                <button class="tag-btn" onclick="filterCategory('麻醉事件')" title="與麻醉過程相關之異常事件">11. 麻醉事件</button>
-                <button class="tag-btn" onclick="filterCategory('檢查/檢驗/病理切片事件')" title="與檢查/檢驗/病理切片等過程相關之異常事件">12. 檢查/檢驗/病理切片事件</button>
-                <button class="tag-btn" onclick="filterCategory('其他事件')" title="非上列之其他病人安全事件">13. 其他事件</button>
+                <button class="tag-btn" onclick="filterCategory('all')">顯示全部問答</button>
+                <button class="tag-btn" onclick="filterCategory('藥物事件')">1. 藥物事件</button>
+                <button class="tag-btn" onclick="filterCategory('跌倒事件')">2. 跌倒事件</button>
+                <button class="tag-btn" onclick="filterCategory('手術事件')">3. 手術事件</button>
+                <button class="tag-btn" onclick="filterCategory('輸血事件')">4. 輸血事件</button>
+                <button class="tag-btn" onclick="filterCategory('醫療照護事件')">5. 醫療照護事件</button>
+                <button class="tag-btn" onclick="filterCategory('公共意外事件')">6. 公共意外事件</button>
+                <button class="tag-btn" onclick="filterCategory('治安事件')">7. 治安事件</button>
+                <button class="tag-btn" onclick="filterCategory('傷害行為事件')">8. 傷害行為事件</button>
+                <button class="tag-btn" onclick="filterCategory('管路事件')">9. 管路事件</button>
+                <button class="tag-btn" onclick="filterCategory('院內不預期心跳停止事件')">10. 院內不預期心跳停止事件</button>
+                <button class="tag-btn" onclick="filterCategory('麻醉事件')">11. 麻醉事件</button>
+                <button class="tag-btn" onclick="filterCategory('檢查/檢驗/病理切片事件')">12. 檢查/檢驗/病理切片事件</button>
+                <button class="tag-btn" onclick="filterCategory('其他事件')">13. 其他事件</button>
                 <button class="tag-btn" onclick="filterCategory('不需通報')">不需通報/非TPR範疇</button>
             </div>
         </div>
+    </div>
+
+    <!-- 首頁預設提示語 -->
+    <div class="placeholder-text" id="placeholderText">
+        🔍 請在上方搜尋框輸入關鍵字，或點選分類按鈕開始查詢 QA。
     </div>
 
     <div class="qa-list" id="qaList">
@@ -432,15 +448,25 @@
     const qaCards = document.querySelectorAll('.qa-card');
     const noResult = document.getElementById('noResult');
     const tagBtns = document.querySelectorAll('.tag-btn');
+    const placeholderText = document.getElementById('placeholderText');
 
-    let currentCategory = 'all';
+    let currentCategory = 'none';
 
-    searchInput.addEventListener('input', filterQA);
+    searchInput.addEventListener('input', () => {
+        // 輸入文字時若有分類未選，視為搜尋全部
+        filterQA();
+    });
 
     function filterCategory(category) {
-        currentCategory = category;
-        tagBtns.forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+        if (currentCategory === category) {
+            // 重複點擊取消選擇，回復初始預設頁面
+            currentCategory = 'none';
+            tagBtns.forEach(btn => btn.classList.remove('active'));
+        } else {
+            currentCategory = category;
+            tagBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
         filterQA();
     }
 
@@ -448,12 +474,22 @@
         const query = searchInput.value.toLowerCase().trim();
         let visibleCount = 0;
 
+        // 若沒有輸入搜尋文字且沒有選擇任何分類，維持首頁預設空白提示
+        if (query === '' && currentCategory === 'none') {
+            placeholderText.style.display = 'block';
+            noResult.style.display = 'none';
+            qaCards.forEach(card => card.style.display = 'none');
+            return;
+        }
+
+        placeholderText.style.display = 'none';
+
         qaCards.forEach(card => {
             const text = card.textContent.toLowerCase();
             const category = card.getAttribute('data-category');
 
             const matchesSearch = text.includes(query);
-            const matchesCategory = (currentCategory === 'all') || category.includes(currentCategory);
+            const matchesCategory = (currentCategory === 'all' || currentCategory === 'none') || category.includes(currentCategory);
 
             if (matchesSearch && matchesCategory) {
                 card.style.display = 'block';
@@ -470,9 +506,6 @@
         }
     }
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
