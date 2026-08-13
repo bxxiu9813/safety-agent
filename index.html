@@ -40,16 +40,18 @@
             margin-bottom: 28px;
         }
 
-        /* 顯眼的醫院全銜 */
-        .hospital-fullname {
-            font-size: 1.25rem;
+        /* 醒目的醫院名字 (獨立一排) */
+        .hospital-title {
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #4a5054;
-            letter-spacing: 1.5px;
+            color: #55585a;
+            letter-spacing: 1px;
             margin-bottom: 12px;
+            background-color: #f3f0ee;
             display: inline-block;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 4px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid #e0dad7;
         }
 
         .logo-container {
@@ -62,7 +64,7 @@
 
         /* Logo Canvas 畫布大小 */
         #hospitalLogoCanvas {
-            height: 50px;
+            height: 52px;
             width: auto;
             vertical-align: middle;
         }
@@ -70,7 +72,7 @@
         h1 {
             color: #2d3135;
             margin: 0;
-            font-size: 1.85rem;
+            font-size: 1.8rem;
             font-weight: 800;
             letter-spacing: 0.5px;
         }
@@ -244,11 +246,11 @@
 
 <div class="container">
     <header>
-        <!-- 頂部獨立醒目醫院全銜 -->
-        <div class="hospital-fullname">戴德森醫療財團法人嘉義基督教醫院</div>
+        <!-- 第一行：灰色小標籤，寫明醫院全銜 -->
+        <div class="hospital-title">戴德森醫療財團法人嘉義基督教醫院</div>
         
+        <!-- 第二行：Logo + 系統主標題 -->
         <div class="logo-container">
-            <!-- 嘉基專屬 Logo Canvas 繪製點 -->
             <canvas id="hospitalLogoCanvas" width="220" height="140"></canvas>
             <h1>病安通報 TPR QA 速查系統</h1>
         </div>
@@ -484,7 +486,7 @@
 </div>
 
 <script>
-    // 繪製醫院 Logo (Canvas 確保 100% 渲染正確)
+    // 繪製醫院 Logo
     window.addEventListener('DOMContentLoaded', () => {
         const canvas = document.getElementById('hospitalLogoCanvas');
         if (!canvas) return;
@@ -493,7 +495,6 @@
         ctx.lineWidth = 14;
         ctx.lineCap = 'round';
 
-        // 畫心形函式
         function drawHeart(cx, cy, scale, angle, color) {
             ctx.save();
             ctx.translate(cx, cy);
@@ -511,13 +512,9 @@
             ctx.restore();
         }
 
-        // 1. 左側灰色心形 (傾斜)
         drawHeart(72, 72, 3.2, -22, '#8A8A8A');
-
-        // 2. 右側橘紅色心形 (傾斜)
         drawHeart(148, 68, 3.2, 18, '#E87461');
 
-        // 3. 中央十字鏈結點 (橘、白、灰方塊)
         ctx.fillStyle = '#E87461';
         ctx.fillRect(82, 57, 18, 18);
 
