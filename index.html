@@ -40,18 +40,12 @@
             margin-bottom: 28px;
         }
 
-        /* 醒目的醫院名字 (獨立一排) */
-        .hospital-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #55585a;
+        .hospital-name-header {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 8px;
             letter-spacing: 1px;
-            margin-bottom: 12px;
-            background-color: #f3f0ee;
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            border: 1px solid #e0dad7;
         }
 
         .logo-container {
@@ -246,10 +240,10 @@
 
 <div class="container">
     <header>
-        <!-- 第一行：灰色小標籤，寫明醫院全銜 -->
-        <div class="hospital-title">戴德森醫療財團法人嘉義基督教醫院</div>
+        <!-- 醫院全銜 (直接顯示在頁面最上方) -->
+        <div class="hospital-name-header">戴德森醫療財團法人嘉義基督教醫院</div>
         
-        <!-- 第二行：Logo + 系統主標題 -->
+        <!-- Logo 與系統標題 -->
         <div class="logo-container">
             <canvas id="hospitalLogoCanvas" width="220" height="140"></canvas>
             <h1>病安通報 TPR QA 速查系統</h1>
