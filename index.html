@@ -3,58 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>病安通報與諮詢助理</title>
+    <title>病安通報與事件判定速查系統</title>
     <style>
-        body {
-            font-family: "Microsoft JhengHei", Arial, sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh;
-        }
-        .card {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            max-width: 550px;
-            width: 100%;
-            text-align: center;
-        }
-        h1 {
-            color: #1a365d;
-            font-size: 24px;
-            margin-bottom: 12px;
-        }
-        p {
-            color: #4a5568;
-            line-height: 1.6;
-            font-size: 15px;
-            margin-bottom: 24px;
-        }
-        .tag {
-            display: inline-block;
-            background-color: #e2e8f0;
-            color: #2d3748;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
+        body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h1 { color: #1a365d; text-align: center; margin-bottom: 8px; font-size: 24px; }
+        .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 20px; }
+        .search-box { width: 100%; padding: 12px 15px; font-size: 16px; border: 2px solid #cbd5e0; border-radius: 8px; box-sizing: border-box; margin-bottom: 20px; outline: none; }
+        .search-box:focus { border-color: #3182ce; }
+        .card { background: #fafafa; border-left: 5px solid #3182ce; padding: 15px 20px; margin-bottom: 15px; border-radius: 4px; }
+        .card h3 { margin: 0 0 8px 0; color: #2b6cb0; font-size: 18px; }
+        .card p { margin: 5px 0; font-size: 14px; line-height: 1.5; }
+        .tag { display: inline-block; background: #e2e8f0; color: #4a5568; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 5px; }
+        .severity-low { border-left-color: #38a169; }
+        .severity-medium { border-left-color: #dd6b20; }
+        .severity-high { border-left-color: #e53e3e; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <span class="tag">臨床風險管理與病人安全</span>
-        <h1>病安通報與諮詢助理</h1>
-        <p>您好！本系統協助您查詢醫策會（TPR）通報標準、判定事件嚴重度（如跌倒、管路、給藥等通報流程）。</p>
-        
-        <!-- 提示：未來如果有 Coze 嵌入碼或連結，可以放在這裡 -->
+<div class="container">
+    <h1>🏥 病人安全異常事件速查系統</h1>
+    <p class="subtitle">醫策會（TPR）通報標準與嚴重度等級快速判定</p>
+
+    <!-- 關鍵字搜尋框 -->
+    <input type="text" id="searchInput" class="search-box" onkeyup="filterCards()" placeholder="🔍 輸入關鍵字搜尋（例如：跌倒、擦傷、骨折、管路、給藥...）">
+
+    <div id="cardList">
+        <!-- 案例 1 -->
+        <div class="card severity-low">
+            <span class="tag">跌倒事件</span><span class="tag">輕微傷</span>
+            <h3>病人跌倒照 X 光無骨折，僅輕微擦傷</h3>
+            <p><strong>判定嚴重度：</strong>輕傷（Mild）</p>
+            <p><strong>TPR 通報建議：</strong>需進行院內通報及 TPR 醫療不良事件通報。</p>
+            <p><strong>處置說明：</strong>予以傷口清潔消毒、給予冰敷，並加強防跌衛教與評估防跌措施。</p>
+        </div>
+
+        <!-- 案例 2 -->
+        <div class="card severity-high">
+            <span class="tag">跌倒事件</span><span class="tag">重傷</span>
+            <h3>病人家屬在浴室入口滑倒致肋骨骨折</h3>
+            <p><strong>判定嚴重度：</strong>重傷（Severe）</p>
+            <p><strong>TPR 通報建議：</strong>家屬/訪客於院區內發生之安全事件，亦屬於廣義病安通報範疇，需通報。</p>
+            <p><strong>處置說明：</strong>立即安排專科會診、完善影像檢查，並評估環境積水/防滑設施改善。</p>
+        </div>
+
+        <!-- 案例 3 -->
+        <div class="card severity-medium">
+            <span class="tag">管路事件</span><span class="tag">自拔/滑脫</span>
+            <h3>鼻胃管（NG Tube）不慎自拔或滑脫</h3>
+            <p><strong>判定嚴重度：</strong>跡近錯失（Near Miss）/ 輕傷</p>
+            <p><strong>TPR 通報建議：</strong>需進行通報，重新留置時須依規範進行位置確認（聽診/X光）。</p>
+            <p><strong>處置說明：</strong>評估病人意識與吞嚥狀況，固定貼布重新更換並檢討約束或約束替代方案。</p>
+        </div>
+
+        <!-- 案例 4 -->
+        <div class="card severity-low">
+            <span class="tag">藥物事件</span><span class="tag">給藥異常</span>
+            <h3>護理師給藥前核對發現劑量錯誤並即時攔截</h3>
+            <p><strong>判定嚴重度：</strong>跡近錯失（Near Miss）</p>
+            <p><strong>TPR 通報建議：</strong>建議通報（可作為三讀五對流程防護機制改善之參考）。</p>
+            <p><strong>處置說明：</strong>事件未影響病人，記錄於通報系統並探討開藥/藥局發藥/護理三讀五對之防禦漏洞。</p>
+        </div>
     </div>
+</div>
+
+<script>
+function filterCards() {
+    let input = document.getElementById('searchInput').value.toLowerCase();
+    let cards = document.getElementsByClassName('card');
+
+    for (let i = 0; i < cards.length; i++) {
+        let text = cards[i].innerText.toLowerCase();
+        if (text.includes(input)) {
+            cards[i].style.display = "";
+        } else {
+            cards[i].style.display = "none";
+        }
+    }
+}
+</script>
 
 </body>
 </html>
