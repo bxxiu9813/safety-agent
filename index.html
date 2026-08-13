@@ -6,16 +6,16 @@
     <title>TPR 病安通報 QA 速查系統</title>
     <style>
         :root {
-            /* 依據貴院 Logo 量身打造的質感配色 */
+            /* 依據貴院 Logo 精準設計的溫暖專業配色 */
             --primary-color: #E87461;       /* 品牌主色：溫暖珊瑚橘 */
             --primary-hover: #d65f4c;       /* 懸浮色：深珊瑚橘 */
             --secondary-color: #72777A;     /* 次要色：沉穩灰 */
-            --bg-color: #fcfbfa;            /* 背景：極柔和暖白 */
+            --bg-color: #fbf9f8;            /* 背景：極柔和暖白 */
             --card-bg: #ffffff;             /* 卡片背景：純白 */
             --text-main: #2d3135;           /* 主要文字：深灰黑 */
             --text-muted: #72777A;          /* 次要文字：霧灰 */
-            --border-color: #e2e4e6;        /* 邊框色 */
-            --tag-bg: #f2f4f5;              /* 按鈕預設背景 */
+            --border-color: #e8e5e3;        /* 邊框色 */
+            --tag-bg: #f3f0ee;              /* 按鈕預設背景 */
             --accent-green: #2f855a;        /* 答題專用：沉穩綠 */
         }
 
@@ -48,9 +48,11 @@
             margin-bottom: 10px;
         }
 
-        .hospital-logo-svg {
-            height: 46px;
+        /* Logo Canvas 畫布大小 */
+        #hospitalLogoCanvas {
+            height: 52px;
             width: auto;
+            vertical-align: middle;
         }
 
         h1 {
@@ -73,7 +75,7 @@
             padding: 22px 24px;
             border-radius: 10px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 8px rgba(232, 116, 97, 0.05);
             margin-bottom: 24px;
         }
 
@@ -81,7 +83,7 @@
             width: 100%;
             padding: 12px 16px;
             font-size: 0.98rem;
-            border: 1px solid #cbd5e0;
+            border: 1px solid #d8d3d0;
             border-radius: 6px;
             box-sizing: border-box;
             outline: none;
@@ -113,17 +115,17 @@
 
         .tag-btn {
             background: var(--tag-bg);
-            border: 1px solid #d1d5db;
+            border: 1px solid #d8d3d0;
             padding: 6px 14px;
             border-radius: 6px;
             font-size: 0.85rem;
-            color: #4b5563;
+            color: #55585a;
             cursor: pointer;
             transition: all 0.15s ease-in-out;
         }
 
         .tag-btn:hover {
-            background: #e5e7eb;
+            background: #e6e2df;
             color: var(--text-main);
         }
 
@@ -194,10 +196,10 @@
         .answer {
             color: #4b5563;
             line-height: 1.6;
-            background: #f9fafb;
+            background: #faf8f7;
             padding: 12px 16px;
             border-radius: 6px;
-            border: 1px solid #f3f4f6;
+            border: 1px solid #f0eded;
             display: flex;
             align-items: flex-start;
             gap: 10px;
@@ -231,21 +233,8 @@
 <div class="container">
     <header>
         <div class="logo-container">
-            <!-- 貴院專屬 Logo (SVG 原生繪製) -->
-            <svg class="hospital-logo-svg" viewBox="0 0 500 320" xmlns="http://www.w3.org/2000/svg">
-                <g fill="none" stroke-width="32" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- 左心（灰色） -->
-                    <path stroke="#8A8A8A" d="M 230,225 C 190,265 140,290 100,260 C 30,210 10,120 80,60 C 130,20 190,40 220,90 C 230,110 235,130 235,145" />
-                    <path stroke="#8A8A8A" d="M 100,260 C 60,230 45,180 65,130 C 85,80 140,55 190,75 C 220,88 235,115 235,145" />
-                    <!-- 右心（橘紅） -->
-                    <path stroke="#E87461" d="M 265,100 C 305,60 355,35 395,65 C 465,115 485,205 415,265 C 365,305 305,285 275,235 C 265,215 260,195 260,180" />
-                    <path stroke="#E87461" d="M 395,65 C 435,95 450,145 430,195 C 410,245 355,270 305,250 C 275,237 260,210 260,180" />
-                </g>
-                <!-- 中央十字鏈結點 -->
-                <rect x="185" y="138" width="42" height="42" fill="#E87461" />
-                <rect x="268" y="138" width="42" height="42" fill="#8A8A8A" />
-                <rect x="227" y="138" width="41" height="42" fill="#FFFFFF" />
-            </svg>
+            <!-- 貴院專屬 Logo Canvas 繪製點 -->
+            <canvas id="hospitalLogoCanvas" width="220" height="140"></canvas>
             <h1>病安通報 TPR QA 速查系統</h1>
         </div>
         <p class="subtitle">依醫策會 TPR 13 大官方事件類別與常見疑義整理</p>
@@ -322,7 +311,7 @@
 
         <!-- Q7 -->
         <div class="qa-card no-report" data-category="不需通報">
-            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">不需通報 / 非TPR範疇</span>
+            <span class="category-badge" style="background:#f3f0ee; color:#55585a; border-color:#d8d3d0;">不需通報 / 非TPR範疇</span>
             <div class="question">醫療處置紀錄單遭同仁冒用姓名是否該通報？如須通報應通報何種異常事件？</div>
             <div class="answer">根據描述，建議內部溝通改善即可，不需通報至TPR。</div>
         </div>
@@ -357,7 +346,7 @@
 
         <!-- Q12 -->
         <div class="qa-card no-report" data-category="不需通報">
-            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">不需通報 / 非TPR範疇</span>
+            <span class="category-badge" style="background:#f3f0ee; color:#55585a; border-color:#d8d3d0;">不需通報 / 非TPR範疇</span>
             <div class="question">病人需緊急使用後線抗癲癇藥物 Briviact，因院內未常備該藥品需辦理急採，可能造成治療延遲。此類事件是否屬於病人安全事件收案範疇？</div>
             <div class="answer">本案因非常備藥品且需辦理緊急採購後始能取得，屬藥品配置及供應機制管理，未涉及醫療照護過程中之異常事件，因此不屬 TPR 病人安全事件收案範疇。</div>
         </div>
@@ -378,7 +367,7 @@
 
         <!-- Q15 -->
         <div class="qa-card no-report" data-category="不需通報">
-            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">不需通報 / 非TPR範疇</span>
+            <span class="category-badge" style="background:#f3f0ee; color:#55585a; border-color:#d8d3d0;">不需通報 / 非TPR範疇</span>
             <div class="question">病房協助病人掛號牙科門診，但牙科現場表示不接受該掛號方式需重新抽牌，系統與現場作業不一致導致病人無法如期就診。請問是否需通報？</div>
             <div class="answer">院內掛號系統設定與牙科門診作業流程不一致，屬行政流程及系統管理問題，不須通報至 TPR。</div>
         </div>
@@ -392,7 +381,7 @@
 
         <!-- Q17 -->
         <div class="qa-card no-report" data-category="不需通報">
-            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">不需通報 / 非TPR範疇</span>
+            <span class="category-badge" style="background:#f3f0ee; color:#55585a; border-color:#d8d3d0;">不需通報 / 非TPR範疇</span>
             <div class="question">病人至院外散步，因人行道高低差踩空擦傷。請問此事件是否須通報至 TPR？</div>
             <div class="answer">病人在非醫療照護環境中發生的跌倒情況，因院外環境無法改善，不須通報 TPR。</div>
         </div>
@@ -448,7 +437,7 @@
 
         <!-- Q25 -->
         <div class="qa-card no-report" data-category="治安事件 不需通報">
-            <span class="category-badge" style="background:#f3f4f6; color:#4b5563; border-color:#d1d5db;">治安事件 (不需通報 / 非TPR範疇)</span>
+            <span class="category-badge" style="background:#f3f0ee; color:#55585a; border-color:#d8d3d0;">治安事件 (不需通報 / 非TPR範疇)</span>
             <div class="question">病人家屬在等候區被陌生男子以幫忙買特效藥膏為由詐騙 3200 元，請問是否須通報至 TPR？</div>
             <div class="answer">詐騙家屬案件不符合病人安全異常事件的定義，不在 TPR 通報範疇內。</div>
         </div>
@@ -480,6 +469,51 @@
 </div>
 
 <script>
+    // 繪製醫院 Logo (Canvas 確保 100% 渲染正確)
+    window.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.getElementById('hospitalLogoCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        ctx.lineWidth = 14;
+        ctx.lineCap = 'round';
+
+        // 畫心形函式
+        function drawHeart(cx, cy, scale, angle, color) {
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(angle * Math.PI / 180);
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            
+            for (let t = 0; t <= Math.PI * 2; t += 0.05) {
+                let x = 16 * Math.pow(Math.sin(t), 3);
+                let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                if (t === 0) ctx.moveTo(x * scale, y * scale);
+                else ctx.lineTo(x * scale, y * scale);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // 1. 左側灰色心形 (傾斜)
+        drawHeart(72, 72, 3.2, -22, '#8A8A8A');
+
+        // 2. 右側橘紅色心形 (傾斜)
+        drawHeart(148, 68, 3.2, 18, '#E87461');
+
+        // 3. 中央十字鏈結點 (橘、白、灰方塊)
+        ctx.fillStyle = '#E87461';
+        ctx.fillRect(82, 57, 18, 18);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(100, 57, 18, 18);
+
+        ctx.fillStyle = '#8A8A8A';
+        ctx.fillRect(118, 57, 18, 18);
+    });
+
+    // 搜尋與篩選邏輯
     const searchInput = document.getElementById('searchInput');
     const qaCards = document.querySelectorAll('.qa-card');
     const noResult = document.getElementById('noResult');
