@@ -50,7 +50,7 @@
 
         /* 白色框框上方的靠右樣式（字體 0.75rem） */
         .meta-info-sub {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             text-align: right;
             margin-bottom: 8px;
@@ -68,7 +68,7 @@
 
         /* Logo Canvas 畫布大小 */
         #hospitalLogoCanvas {
-            height: 56px;
+            height: 58px;
             width: auto;
             vertical-align: middle;
         }
@@ -539,8 +539,8 @@
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
 
-        // 畫心形通用函式 (使用心形參數方程式)
-        function drawHeartShape(cx, cy, scale, angle, color, openGap = false) {
+        // 畫心形通用函式
+        function drawHeartShape(cx, cy, scaleX, scaleY, angle, color, openGap = false) {
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(angle * Math.PI / 180);
@@ -550,7 +550,6 @@
             ctx.lineJoin = 'round';
             ctx.beginPath();
             
-            // 繪製心形路徑
             const steps = 100;
             let first = true;
             for (let i = 0; i <= steps; i++) {
@@ -566,21 +565,21 @@
                 let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
                 
                 if (first) {
-                    ctx.moveTo(x * scale, y * scale);
+                    ctx.moveTo(x * scaleX, y * scaleY);
                     first = false;
                 } else {
-                    ctx.lineTo(x * scale, y * scale);
+                    ctx.lineTo(x * scaleX, y * scaleY);
                 }
             }
             ctx.stroke();
             ctx.restore();
         }
 
-        // 1. 左側灰色愛心（向左下傾斜，開口在右上交界處）
-        drawHeartShape(75, 82, 3.2, -55, '#8A8A8A', true);
+        // 1. 左側灰色愛心：尖端朝上（向左上斜立，尖角在上）
+        drawHeartShape(72, 75, 3.2, 3.2, -135, '#8A8A8A', true);
 
-        // 2. 右側珊瑚橘愛心（正立偏右傾斜，開口在左下）
-        drawHeartShape(162, 68, 3.2, 12, '#E87461', true);
+        // 2. 右側橘色愛心：尖端朝下（正立，尖角在正下方）
+        drawHeartShape(162, 68, 3.2, 3.2, 12, '#E87461', true);
 
         // 3. 中間橫向三個小方塊 (橘色 - 白色 - 灰色)
         const sqSize = 15;
