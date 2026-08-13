@@ -37,22 +37,25 @@
         /* 標題與 Logo 區塊 */
         header {
             text-align: center;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
 
         .hospital-name-header {
             font-size: 1.4rem;
             font-weight: 800;
             color: var(--primary-color);
-            margin-bottom: 4px;
+            margin-bottom: 10px;
             letter-spacing: 1px;
         }
 
+        /* 改為白色框框上方的靠右樣式 */
         .meta-info-sub {
             font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 12px;
+            text-align: right;
+            margin-bottom: 8px;
             letter-spacing: 0.5px;
+            padding-right: 2px;
         }
 
         .logo-container {
@@ -280,17 +283,17 @@
     <header>
         <div class="hospital-name-header">戴德森醫療財團法人嘉義基督教醫院</div>
         
-        <!-- 已調整至醫院名稱正下方 -->
-        <div class="meta-info-sub">
-            醫療品質部 病人安全科 製 ｜ 更新日期：2026/08/13
-        </div>
-        
         <div class="logo-container">
             <canvas id="hospitalLogoCanvas" width="220" height="140"></canvas>
             <h1>病安通報 Q&A 速查系統</h1>
         </div>
         <p class="subtitle">依醫策會 TPR 13 大官方事件類別與常見疑義整理</p>
     </header>
+
+    <!-- 放在白色搜尋框最上方靠右邊 -->
+    <div class="meta-info-sub">
+        醫療品質部 病人安全科 製 ｜ 更新日期：2026/08/13
+    </div>
 
     <div class="search-box">
         <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋（例如：標本、延遲、滑倒、抗生素、同意書）...">
