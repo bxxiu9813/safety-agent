@@ -66,9 +66,9 @@
             margin-bottom: 6px;
         }
 
-        /* Logo 圖片樣式（精準呈現官方雙心 Cross Logo） */
+        /* Logo 圖片樣式（套用雲端真實圖片） */
         .hospital-logo-img {
-            height: 58px;
+            height: 50px; /* 控制高度，可依視覺效果調整至 45px ~ 60px */
             width: auto;
             vertical-align: middle;
             object-fit: contain;
@@ -285,8 +285,8 @@
         <div class="hospital-name-header">戴德森醫療財團法人嘉義基督教醫院</div>
         
         <div class="logo-container">
-            <!-- 直接繪製 100% 精準原圖向量 Logo -->
-            <canvas id="hospitalLogoCanvas" class="hospital-logo-img" width="220" height="140"></canvas>
+            <!-- 已替換為雲端硬碟的圖片連結 -->
+            <img src="https://lh3.googleusercontent.com/d/1XyKm1egr5NiEPAz_ZIuQEZczGa216u67" alt="嘉基院徽" class="hospital-logo-img">
             <h1>病安通報 Q&A 速查系統</h1>
         </div>
         <p class="subtitle">依醫策會 TPR 13 大官方事件類別與常見疑義整理</p>
@@ -535,78 +535,6 @@
 </div>
 
 <script>
-    // 根據您提供的原圖進行 100% 精準 1:1 向量重構
-    window.addEventListener('DOMContentLoaded', () => {
-        const canvas = document.getElementById('hospitalLogoCanvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-
-        // 1. 左側灰色愛心（外框與內框繪製，尖端在正上方約1點鐘方向，凹槽在右邊）
-        ctx.save();
-        ctx.fillStyle = '#8C8D8E'; // 嘉基官方灰色
-        
-        ctx.beginPath();
-        // 外輪廓
-        ctx.moveTo(76, 8);
-        ctx.bezierCurveTo(42, 22, 12, 52, 6, 85);
-        ctx.bezierCurveTo(0, 118, 25, 138, 55, 138);
-        ctx.bezierCurveTo(72, 138, 86, 128, 98, 110);
-        ctx.bezierCurveTo(110, 128, 118, 138, 118, 138); // 下緣
-        ctx.lineTo(118, 114);
-        ctx.bezierCurveTo(106, 98, 102, 85, 102, 65); // 內凹
-        ctx.bezierCurveTo(102, 45, 114, 38, 118, 32);
-        ctx.lineTo(102, 14);
-        ctx.closePath();
-        
-        // 內掏空輪廓
-        ctx.moveTo(72, 26);
-        ctx.bezierCurveTo(86, 38, 86, 52, 86, 68);
-        ctx.bezierCurveTo(86, 88, 70, 118, 52, 118);
-        ctx.bezierCurveTo(34, 118, 20, 104, 22, 82);
-        ctx.bezierCurveTo(24, 58, 48, 34, 72, 26);
-        ctx.closePath();
-        ctx.fill('evenodd');
-        ctx.restore();
-
-        // 2. 右側橘色愛心（尖端在正下方，左側開口）
-        ctx.save();
-        ctx.fillStyle = '#E87461'; // 嘉基品牌橘色
-        
-        ctx.beginPath();
-        // 外輪廓
-        ctx.moveTo(164, 8);
-        ctx.bezierCurveTo(140, 8, 120, 24, 110, 48);
-        ctx.lineTo(128, 62);
-        ctx.bezierCurveTo(134, 46, 148, 28, 164, 28);
-        ctx.bezierCurveTo(180, 28, 196, 42, 196, 62);
-        ctx.bezierCurveTo(196, 88, 168, 120, 148, 138); // 尖端向下
-        ctx.bezierCurveTo(132, 122, 122, 110, 122, 102);
-        ctx.lineTo(122, 126);
-        ctx.lineTo(148, 148); // 最下尖角
-        ctx.bezierCurveTo(176, 124, 216, 88, 216, 60);
-        ctx.bezierCurveTo(216, 26, 192, 8, 164, 8);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-
-        // 3. 中間三個正方形 (橘 - 白 - 灰)
-        const sq = 14;
-        const startX = 80;
-        const startY = 62;
-
-        // 橘色方塊
-        ctx.fillStyle = '#E87461';
-        ctx.fillRect(startX, startY, sq, sq);
-
-        // 白色方塊 (含細邊框避免與背景混淆)
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(startX + sq, startY, sq, sq);
-
-        // 灰色方塊
-        ctx.fillStyle = '#8C8D8E';
-        ctx.fillRect(startX + sq * 2, startY, sq, sq);
-    });
-
     // 搜尋與篩選邏輯
     const searchInput = document.getElementById('searchInput');
     const qaCards = document.querySelectorAll('.qa-card');
