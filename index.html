@@ -158,7 +158,7 @@
             border: 1px solid var(--border-color);
             border-left: 5px solid var(--primary-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            display: none; /* 預設全隱藏 */
+            display: none; /* 預設隱藏，由 JS 控制顯示 */
         }
 
         .qa-card.no-report {
@@ -240,10 +240,8 @@
 
 <div class="container">
     <header>
-        <!-- 醫院全銜 -->
         <div class="hospital-name-header">戴德森醫療財團法人嘉義基督教醫院</div>
         
-        <!-- Logo 與系統標題 -->
         <div class="logo-container">
             <canvas id="hospitalLogoCanvas" width="220" height="140"></canvas>
             <h1>病安通報 Q&A 速查系統</h1>
@@ -257,7 +255,7 @@
         <div class="filter-container">
             <div class="filter-label">依醫策會 13 大通報類別篩選：</div>
             <div class="filter-tags" id="filterTags">
-                <button class="tag-btn active" onclick="selectCategory('all', this)">全部類別</button>
+                <button class="tag-btn" onclick="selectCategory('all', this)">全部類別</button>
                 <button class="tag-btn" onclick="selectCategory('藥物事件', this)">藥物事件</button>
                 <button class="tag-btn" onclick="selectCategory('跌倒事件', this)">跌倒事件</button>
                 <button class="tag-btn" onclick="selectCategory('手術事件', this)">手術事件</button>
@@ -519,17 +517,15 @@
         ctx.fillRect(118, 57, 18, 18);
     });
 
-    // 搜尋與篩選邏輯
+    // 搜尋與篩選邏輯 (已徹底修復)
     const searchInput = document.getElementById('searchInput');
     const qaCards = document.querySelectorAll('.qa-card');
     const noResult = document.getElementById('noResult');
     const tagBtns = document.querySelectorAll('.tag-btn');
 
-    let currentCategory = 'none';
+    let currentCategory = 'all'; // 預設類別為全選
 
-    searchInput.addEventListener('input', () => {
-        filterQA();
-    });
+    searchInput.addEventListener('input', filterQA);
 
     function selectCategory(category, btn) {
         currentCategory = category;
@@ -542,7 +538,8 @@
         const query = searchInput.value.toLowerCase().trim();
         let visibleCount = 0;
 
-        if (query === '' && currentCategory === 'none') {
+        // 如果既沒有打字，也沒有選擇特定分類（全選狀態），就保持預設乾淨畫面（全隱藏）
+        if (query === '' && currentCategory === 'all' && !document.querySelector('.tag-btn.active')) {
             qaCards.forEach(card => card.style.display = 'none');
             noResult.style.display = 'none';
             return;
@@ -552,8 +549,10 @@
             const text = card.textContent.toLowerCase();
             const category = card.getAttribute('data-category');
 
-            const matchesSearch = text.includes(query);
-            const matchesCategory = (currentCategory === 'all') || category.includes(currentCategory);
+            // 判斷搜尋文字：空字串為 true，有字則比對文字
+            const matchesSearch = query === '' || text.includes(query);
+            // 判斷分類按鈕：all 為 true，否則比對分類
+            const matchesCategory = currentCategory === 'all' || category.includes(currentCategory);
 
             if (matchesSearch && matchesCategory) {
                 card.style.display = 'block';
@@ -563,7 +562,7 @@
             }
         });
 
-        if (visibleCount === 0) {
+        if (visibleCount === 0 && (query !== '' || currentCategory !== 'all')) {
             noResult.style.display = 'block';
         } else {
             noResult.style.display = 'none';
