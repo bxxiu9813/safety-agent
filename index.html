@@ -45,9 +45,6 @@
         }
 
         .search-box {
-            position: sticky;
-            top: 15px;
-            z-index: 100;
             background: var(--card-bg);
             padding: 18px 20px;
             border-radius: 12px;
@@ -121,7 +118,7 @@
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             border-left: 5px solid var(--primary-color);
-            display: none; /* 預設全部隱藏 */
+            display: none; /* 預設全隱藏 */
         }
 
         .qa-card.no-report {
@@ -184,16 +181,6 @@
             flex-shrink: 0;
         }
 
-        .placeholder-text {
-            text-align: center;
-            color: #888;
-            padding: 50px 20px;
-            font-size: 1rem;
-            background: var(--card-bg);
-            border-radius: 10px;
-            border: 2px dashed #e0e0e0;
-        }
-
         .no-result {
             text-align: center;
             color: #888;
@@ -216,70 +203,65 @@
         <div class="filter-container">
             <div class="filter-label">依醫策會 13 大通報類別篩選：</div>
             <div class="filter-tags" id="filterTags">
-                <button class="tag-btn" onclick="filterCategory('all')">顯示全部問答</button>
-                <button class="tag-btn" onclick="filterCategory('藥物事件')">1. 藥物事件</button>
-                <button class="tag-btn" onclick="filterCategory('跌倒事件')">2. 跌倒事件</button>
-                <button class="tag-btn" onclick="filterCategory('手術事件')">3. 手術事件</button>
-                <button class="tag-btn" onclick="filterCategory('輸血事件')">4. 輸血事件</button>
-                <button class="tag-btn" onclick="filterCategory('醫療照護事件')">5. 醫療照護事件</button>
-                <button class="tag-btn" onclick="filterCategory('公共意外事件')">6. 公共意外事件</button>
-                <button class="tag-btn" onclick="filterCategory('治安事件')">7. 治安事件</button>
-                <button class="tag-btn" onclick="filterCategory('傷害行為事件')">8. 傷害行為事件</button>
-                <button class="tag-btn" onclick="filterCategory('管路事件')">9. 管路事件</button>
-                <button class="tag-btn" onclick="filterCategory('院內不預期心跳停止事件')">10. 院內不預期心跳停止事件</button>
-                <button class="tag-btn" onclick="filterCategory('麻醉事件')">11. 麻醉事件</button>
-                <button class="tag-btn" onclick="filterCategory('檢查/檢驗/病理切片事件')">12. 檢查/檢驗/病理切片事件</button>
-                <button class="tag-btn" onclick="filterCategory('其他事件')">13. 其他事件</button>
-                <button class="tag-btn" onclick="filterCategory('不需通報')">不需通報/非TPR範疇</button>
+                <button class="tag-btn active" onclick="selectCategory('all', this)">全部類別</button>
+                <button class="tag-btn" onclick="selectCategory('藥物事件', this)">藥物事件</button>
+                <button class="tag-btn" onclick="selectCategory('跌倒事件', this)">跌倒事件</button>
+                <button class="tag-btn" onclick="selectCategory('手術事件', this)">手術事件</button>
+                <button class="tag-btn" onclick="selectCategory('輸血事件', this)">輸血事件</button>
+                <button class="tag-btn" onclick="selectCategory('醫療照護事件', this)">醫療照護事件</button>
+                <button class="tag-btn" onclick="selectCategory('公共意外事件', this)">公共意外事件</button>
+                <button class="tag-btn" onclick="selectCategory('治安事件', this)">治安事件</button>
+                <button class="tag-btn" onclick="selectCategory('傷害行為事件', this)">傷害行為事件</button>
+                <button class="tag-btn" onclick="selectCategory('管路事件', this)">管路事件</button>
+                <button class="tag-btn" onclick="selectCategory('院內不預期心跳停止事件', this)">院內不預期心跳停止事件</button>
+                <button class="tag-btn" onclick="selectCategory('麻醉事件', this)">麻醉事件</button>
+                <button class="tag-btn" onclick="selectCategory('檢查/檢驗/病理切片事件', this)">檢查/檢驗/病理切片事件</button>
+                <button class="tag-btn" onclick="selectCategory('其他事件', this)">其他事件</button>
+                <button class="tag-btn" onclick="selectCategory('不需通報', this)">不需通報/非TPR範疇</button>
             </div>
         </div>
-    </div>
-
-    <!-- 首頁預設提示語 -->
-    <div class="placeholder-text" id="placeholderText">
-        🔍 請在上方搜尋框輸入關鍵字，或點選分類按鈕開始查詢 QA。
     </div>
 
     <div class="qa-list" id="qaList">
 
         <!-- Q1 -->
         <div class="qa-card" data-category="檢查/檢驗/病理切片事件">
-            <span class="category-badge">12. 檢查/檢驗/病理切片事件</span>
+            <span class="category-badge">檢查/檢驗/病理切片事件</span>
             <div class="question">病人行下鼻甲腫塊手術時，術中切下的組織標本送驗，但後來發現送出的標本無法確定是否為當初指定送檢的檢體，請問嚴重度該如何判斷？</div>
             <div class="answer">若造成重新採檢之事件，對病人健康的影響程度至少為『輕度』；若此檢體無法再取得(病人組織切片)、取得不易(腦脊髓液)或是再採之檢體(飯前血糖)品質無法等同前一次之檢體遺失，則依據是否對病情延遲診斷或後續處置的影響程度判定嚴重度。</div>
         </div>
 
         <!-- Q2 -->
         <div class="qa-card" data-category="檢查/檢驗/病理切片事件">
-            <span class="category-badge">12. 檢查/檢驗/病理切片事件</span>
+            <span class="category-badge">檢查/檢驗/病理切片事件</span>
             <div class="question">單位欲傳送檢體，下單系統時下錯任務別，導致檢體延遲送檢，該歸類為「其他事件」還是「檢查/檢驗/病理切片」事件？</div>
             <div class="answer">請通報「檢查檢驗病理切片事件」，發生階段(可複選)->採檢/送檢階段->勾選「檢體延遲送檢」及其他：說明下單系統時人為因素下錯任務別。</div>
         </div>
 
         <!-- Q3 -->
         <div class="qa-card" data-category="跌倒事件">
-            <span class="category-badge">2. 跌倒事件</span>
+            <span class="category-badge">跌倒事件</span>
             <div class="question">病人原坐在椅子上，慢慢暈倒滑落地上，此事件需要通報TPR嗎？如果需要應歸類於什麼事件？</div>
             <div class="answer">請通報「跌倒事件」，並依實際造成病人跌倒的原因勾選。</div>
         </div>
 
         <!-- Q4 -->
         <div class="qa-card" data-category="檢查/檢驗/病理切片事件">
-            <span class="category-badge">12. 檢查/檢驗/病理切片事件</span>
+            <span class="category-badge">檢查/檢驗/病理切片事件</span>
             <div class="question">開刀房送同一病人檢病理切片檢體兩件，兩檢體罐標籤互換貼錯 => 該歸類為檢查檢驗病理切片事件還是手術事件？</div>
             <div class="answer">通報至「檢查檢驗病理切片事件」→ 勾選「事件發生階段」→「採檢/送檢階段」→「標籤錯誤」，並依實際狀況評估填寫。</div>
         </div>
 
         <!-- Q5 -->
         <div class="qa-card" data-category="檢查/檢驗/病理切片事件">
-            <span class="category-badge">12. 檢查/檢驗/病理切片事件</span>
+            <span class="category-badge">檢查/檢驗/病理切片事件</span>
             <div class="question">手術中檢體遺失該歸類為手術事件還是檢查檢驗病理切片事件？若屬於手術事件，檢體該如何判斷應歸類為手術事件還是檢驗檢查病理切片事件？</div>
             <div class="answer">依據台灣病安通報系統 Q&A -> 檢查檢驗 NO.L001，此事件請通報為「檢查/檢驗/病理切片事件」，事件發生階段請勾選『採檢/送檢階段/檢體遺失或損毀』。建議機構也在手術流程中改善，例如術前即在手術室備好檢體留存之器具。</div>
         </div>
 
         <!-- Q6 -->
         <div class="qa-card" data-category="藥物事件">
-            <span class="category-badge">1. 藥物事件</span>
+            <span class="category-badge">藥物事件</span>
             <div class="question">病人感染性心內膜炎，細菌血症QD使用抗生素治療，手術當日主護早上的抗生素沒給，未交給麻醉科給藥或詢問主治醫師是否要給藥或停藥，病人於未打抗生素狀況進行長時間手術。請問此事件該歸類為藥物事件或醫療照護事件？</div>
             <div class="answer">請通報至「藥物事件」/遺漏給藥。</div>
         </div>
@@ -293,28 +275,28 @@
 
         <!-- Q8 -->
         <div class="qa-card" data-category="跌倒事件 其他事件">
-            <span class="category-badge">2. 跌倒事件 / 通報判定原則</span>
+            <span class="category-badge">跌倒事件 / 通報判定原則</span>
             <div class="question">通報事件中此類事件再次發生的頻率是以事件類別（如：跌倒事件發生的頻率）做判斷，還是以事件類型（如：因"踩到拖鞋"跌倒的頻率）做判斷？</div>
             <div class="answer">此類事件再次發生的可能情形（意指本次事件"依情境與經驗"評估可能再發生的機會）；例如通報跌倒事件：病人因服藥後產生暈眩下床上廁所發生跌倒，類似此情況再次發生的機會？會因過往經驗發生的頻率為參考。</div>
         </div>
 
         <!-- Q9 -->
         <div class="qa-card" data-category="跌倒事件">
-            <span class="category-badge">2. 跌倒事件</span>
+            <span class="category-badge">跌倒事件</span>
             <div class="question">若"病人家屬"在浴室入口處滑倒，至急診求診後，發現左側肋骨斷掉一根（未開刀），傷害程度應如何判定？</div>
             <div class="answer">此事件發生對象為家屬，無法評估傷害程度。相關 QA 請檢視病人安全資訊網 Q&A 編號：F010。</div>
         </div>
 
         <!-- Q10 -->
         <div class="qa-card" data-category="檢查/檢驗/病理切片事件">
-            <span class="category-badge">12. 檢查/檢驗/病理切片事件</span>
+            <span class="category-badge">檢查/檢驗/病理切片事件</span>
             <div class="question">病人拿著檢查單要來照 KUB X-Ray，詢問病人的姓名，發現病人手上拿的檢查單是 B 這個病人的檢查單，致電診間後確認給錯檢查單張，請問此事件該歸類至何種事件類別？</div>
             <div class="answer">請通報至「檢查/檢驗/病理切片事件」 -> 檢查(驗)單交付錯誤。</div>
         </div>
 
         <!-- Q11 -->
         <div class="qa-card" data-category="跌倒事件 公共意外事件">
-            <span class="category-badge">2. 跌倒事件 / 6. 公共意外事件</span>
+            <span class="category-badge">跌倒事件 / 公共意外事件</span>
             <div class="question">病人欲至門診看診，機車停在私人機車場，走至門診機車入口之慢車道時跌倒，請問此範圍是否歸屬於院內區域，是否需進行通報？</div>
             <div class="answer">需先釐清「病人跌倒之慢車道，是否屬醫院院區範圍或由醫院負責管理維護？」若跌倒事件發生於醫院可管理、可改善之環境，則屬 TPR 通報範圍。</div>
         </div>
@@ -328,14 +310,14 @@
 
         <!-- Q13 -->
         <div class="qa-card" data-category="醫療照護事件">
-            <span class="category-badge">5. 醫療照護事件</span>
+            <span class="category-badge">醫療照護事件</span>
             <div class="question">病人左肩脫臼復位後以三角巾固定，做右肩 CT 檢查時依指示雙上肢舉高，隨後左肩再次脫臼。請問此事件該歸類為何種事件類別？</div>
             <div class="answer">建議通報為「醫療照護事件」，發生階段勾選「評估」->「未評估」及「處置、治療或照護」->「處置問題」，並依病人實際受傷害情形填報健康影響程度。</div>
         </div>
 
         <!-- Q14 -->
         <div class="qa-card" data-category="藥物事件">
-            <span class="category-badge">1. 藥物事件</span>
+            <span class="category-badge">藥物事件</span>
             <div class="question">無痛腸胃鏡給予 Propofol 鎮靜時發現 IV 注射部位腫脹外漏，現場立即停止並處理。請問此案件應歸類為何種類別？</div>
             <div class="answer">請通報至「藥物事件」。</div>
         </div>
@@ -349,7 +331,7 @@
 
         <!-- Q16 -->
         <div class="qa-card" data-category="手術事件">
-            <span class="category-badge">3. 手術事件</span>
+            <span class="category-badge">手術事件</span>
             <div class="question">手術室尚未準備完成就被通知病人已被醫師帶至術前，沒有經過刀房控台通知也沒有經急診交班，不符合標準流程。應歸類醫療照護還是手術事件？</div>
             <div class="answer">建議通報至「手術事件」 / 發生階段：術前準備 / 類型：術前準備程序不完善。</div>
         </div>
@@ -363,77 +345,77 @@
 
         <!-- Q18 -->
         <div class="qa-card" data-category="醫療照護事件 其他事件">
-            <span class="category-badge">5. 醫療照護事件 / 13. 其他事件</span>
+            <span class="category-badge">醫療照護事件 / 其他事件</span>
             <div class="question">因排班資訊誤植，致使重大外傷機制時無法即時聯繫到值班醫師，請問此事件該歸類為其他事件或是醫療照護事件？</div>
             <div class="answer">1. 若僅為單純排班資訊誤植，未影響到病人照護流程，屬行政/資訊面管理問題，建議機構內部檢討改善即可。<br>2. 若因此造成延誤急救、治療或緊急處置流程等情形，進而增加病人風險或已影響到病人照護，請通報至「醫療照護事件」。</div>
         </div>
 
         <!-- Q19 -->
         <div class="qa-card" data-category="公共意外事件">
-            <span class="category-badge">6. 公共意外事件</span>
+            <span class="category-badge">公共意外事件</span>
             <div class="question">病房氧氣流量表掉下來打到病人的額頭，產生破皮傷口，請問此事件應歸類至何種事件？</div>
             <div class="answer">此事件為設備物品固定不良與環境安全異常有關，建議通報至「公共意外事件」。</div>
         </div>
 
         <!-- Q20 -->
         <div class="qa-card" data-category="手術事件 跌倒事件">
-            <span class="category-badge">3. 手術事件 / 2. 跌倒事件</span>
+            <span class="category-badge">手術事件 / 跌倒事件</span>
             <div class="question">術中進行約15度床面傾斜時，約束帶疑似承受過大壓力彈開，導致病人自床上滑落。應歸類為手術事件或跌倒事件？</div>
             <div class="answer">若一項事件跨兩個範疇時，請以對病人健康影響程度較嚴重者進行通報。</div>
         </div>
 
         <!-- Q21 -->
         <div class="qa-card" data-category="公共意外事件 藥物事件">
-            <span class="category-badge">6. 公共意外事件 / 1. 藥物事件</span>
+            <span class="category-badge">公共意外事件 / 藥物事件</span>
             <div class="question">病人接上化療藥後，化療藥物由 Bag 的加藥處滲漏出來。請問此事件該歸類為何種事件分類？</div>
             <div class="answer">化療藥物滲漏若潑灑於地面，請通報至「公共意外事件」；若侷限於皮膚組織內，請通報至「藥物事件」。並請釐清是否有醫材不良的問題。</div>
         </div>
 
         <!-- Q22 -->
         <div class="qa-card" data-category="手術事件 其他事件">
-            <span class="category-badge">3. 手術事件 / 13. 其他事件</span>
+            <span class="category-badge">手術事件 / 其他事件</span>
             <div class="question">主護發現麻醉同意書已被簽署且簽署人非病人家屬。請問此事件該歸種事件？</div>
             <div class="answer">若因同意書未填或填寫不完整導致手術中斷或延誤，造成治療或處置問題時，請通報至「手術事件」。若未牽涉治療處置（如不及時補簽未影響排程），建議通報至「其他事件」。</div>
         </div>
 
         <!-- Q23 -->
         <div class="qa-card" data-category="檢查/檢驗/病理切片事件">
-            <span class="category-badge">12. 檢查/檢驗/病理切片事件</span>
+            <span class="category-badge">檢查/檢驗/病理切片事件</span>
             <div class="question">心電圖覆核報告註記高風險診斷（suspect Wellens syndrome），但未即時通知臨床團隊或已出院之病人。此案件該歸類於事件發生的哪個階段？</div>
             <div class="answer">請通報至「檢查/檢驗/病理切片事件」→ 檢查單位報告階段 → 報告延遲。</div>
         </div>
 
         <!-- Q24 -->
         <div class="qa-card" data-category="手術事件">
-            <span class="category-badge">3. 手術事件</span>
+            <span class="category-badge">手術事件</span>
             <div class="question">病人本次住院不需進行瘻管手術，但因門診舊有同意書存在，護理師無醫囑下被通知並將病人推至開刀房。應歸類為醫療照護還是手術事件？</div>
             <div class="answer">請通報至「手術事件」 → 術前準備 → 術前準備程序不完善，並請依發生實際狀況進行填報。</div>
         </div>
 
         <!-- Q25 -->
         <div class="qa-card no-report" data-category="治安事件 不需通報">
-            <span class="category-badge" style="background:#e2e3e5; color:#383d41;">7. 治安事件 (不需通報 / 非TPR範疇)</span>
+            <span class="category-badge" style="background:#e2e3e5; color:#383d41;">治安事件 (不需通報 / 非TPR範疇)</span>
             <div class="question">病人家屬在等候區被陌生男子以幫忙買特效藥膏為由詐騙 3200 元，請問是否須通報至 TPR？</div>
             <div class="answer">詐騙家屬案件不符合病人安全異常事件的定義，不在 TPR 通報範疇內。</div>
         </div>
 
         <!-- Q26 -->
         <div class="qa-card" data-category="公共意外事件">
-            <span class="category-badge">6. 公共意外事件</span>
+            <span class="category-badge">公共意外事件</span>
             <div class="question">超商微波爐主機板故障導致冒煙觸動偵煙器，是否須通報？對病人影響程度該如何選擇？</div>
             <div class="answer">若發生地點為照護病人之場域如配膳室、病房裡，且影響到病人造成傷害，請通報「公共意外事件」。</div>
         </div>
 
         <!-- Q27 -->
         <div class="qa-card" data-category="公共意外事件">
-            <span class="category-badge">6. 公共意外事件</span>
+            <span class="category-badge">公共意外事件</span>
             <div class="question">病人於腹部 X 光檢查結束時，X 光機內定位燈泡破裂，碎屑掉落至病人身上及手上致輕微紅腫，應歸類為公共意外還是醫療照護事件？</div>
             <div class="answer">建議通報至「公共意外事件」。</div>
         </div>
 
         <!-- Q28 -->
         <div class="qa-card" data-category="跌倒事件 傷害行為事件">
-            <span class="category-badge">2. 跌倒事件 / 8. 傷害行為事件</span>
+            <span class="category-badge">跌倒事件 / 傷害行為事件</span>
             <div class="question">精神科門診病人於藥局前趴倒在地、大吼大叫並用頭撞地板自殘，後續送急診，應歸類為何種事件？</div>
             <div class="answer">可通報至「跌倒事件」或「傷害行為事件」，請依實際影響情形判定傷害程度，並以傷害程度較高者之事件類別進行通報即可。</div>
         </div>
@@ -448,25 +430,20 @@
     const qaCards = document.querySelectorAll('.qa-card');
     const noResult = document.getElementById('noResult');
     const tagBtns = document.querySelectorAll('.tag-btn');
-    const placeholderText = document.getElementById('placeholderText');
 
-    let currentCategory = 'none';
+    let currentCategory = 'none'; // 預設進來不自動觸發任何類別
 
     searchInput.addEventListener('input', () => {
-        // 輸入文字時若有分類未選，視為搜尋全部
         filterQA();
     });
 
-    function filterCategory(category) {
-        if (currentCategory === category) {
-            // 重複點擊取消選擇，回復初始預設頁面
-            currentCategory = 'none';
-            tagBtns.forEach(btn => btn.classList.remove('active'));
-        } else {
-            currentCategory = category;
-            tagBtns.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
+    function selectCategory(category, btn) {
+        currentCategory = category;
+        
+        // 切換按鈕的高亮狀態
+        tagBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
         filterQA();
     }
 
@@ -474,22 +451,19 @@
         const query = searchInput.value.toLowerCase().trim();
         let visibleCount = 0;
 
-        // 若沒有輸入搜尋文字且沒有選擇任何分類，維持首頁預設空白提示
+        // 若沒有輸入任何文字，且沒有點擊任何按鈕（或當前是初始未選擇狀態），則全部隱藏保持空白
         if (query === '' && currentCategory === 'none') {
-            placeholderText.style.display = 'block';
-            noResult.style.display = 'none';
             qaCards.forEach(card => card.style.display = 'none');
+            noResult.style.display = 'none';
             return;
         }
-
-        placeholderText.style.display = 'none';
 
         qaCards.forEach(card => {
             const text = card.textContent.toLowerCase();
             const category = card.getAttribute('data-category');
 
             const matchesSearch = text.includes(query);
-            const matchesCategory = (currentCategory === 'all' || currentCategory === 'none') || category.includes(currentCategory);
+            const matchesCategory = (currentCategory === 'all') || category.includes(currentCategory);
 
             if (matchesSearch && matchesCategory) {
                 card.style.display = 'block';
