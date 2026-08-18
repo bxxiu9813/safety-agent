@@ -100,7 +100,7 @@
 
         input[type="text"] {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px 40px 12px 16px; /* 右側留空間給清除按鈕 */
             font-size: 0.98rem;
             border: 1px solid #d8d3d0;
             border-radius: 6px;
@@ -114,6 +114,39 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(232, 116, 97, 0.15);
         }
+
+        /* ▼ 新增：關鍵字高亮樣式與搜尋框清除按鈕樣式 ▼ */
+        mark.search-highlight {
+            background-color: #ffe58f;
+            color: #1f1f1f;
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .clear-search-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: none;
+            padding: 0 4px;
+        }
+
+        .clear-search-btn:hover {
+            color: var(--primary-color);
+        }
+        /* ▲ 新增結束 ▲ */
 
         .filter-container {
             margin-top: 16px;
@@ -298,7 +331,12 @@
     </div>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋（例如：標本、延遲、滑倒、抗生素、同意書）...">
+        <!-- ▼ 新增：搜尋框包覆容器與一鍵清除按鈕 ▼ -->
+        <div class="search-input-wrapper">
+            <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋（例如：標本、延遲、滑倒、抗生素、同意書）...">
+            <button type="button" class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()" title="清除搜尋">✕</button>
+        </div>
+        <!-- ▲ 新增結束 ▲ -->
         
         <div class="filter-container">
             <div class="filter-label">依醫策會 13 大通報類別篩選：</div>
@@ -1440,13 +1478,38 @@
 <script>
     // 搜尋與篩選邏輯
     const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
     const qaCards = document.querySelectorAll('.qa-card');
     const noResult = document.getElementById('noResult');
     const tagBtns = document.querySelectorAll('.tag-btn');
 
     let currentCategory = 'all';
 
-    searchInput.addEventListener('input', filterQA);
+    // 初始化保存每一張卡片的原始 HTML 內容（高亮還原用）
+    qaCards.forEach(card => {
+        const qEl = card.querySelector('.question');
+        const aEl = card.querySelector('.answer');
+        if (qEl) qEl.setAttribute('data-original', qEl.innerHTML);
+        if (aEl) aEl.setAttribute('data-original', aEl.innerHTML);
+    });
+
+    searchInput.addEventListener('input', () => {
+        toggleClearBtn();
+        filterQA();
+    });
+
+    function toggleClearBtn() {
+        if (clearBtn) {
+            clearBtn.style.display = searchInput.value.trim() !== '' ? 'block' : 'none';
+        }
+    }
+
+    function clearSearch() {
+        searchInput.value = '';
+        toggleClearBtn();
+        filterQA();
+        searchInput.focus();
+    }
 
     function selectCategory(category, btn) {
         currentCategory = category;
@@ -1456,35 +1519,87 @@
     }
 
     function filterQA() {
-        const query = searchInput.value.toLowerCase().trim();
+        const query = searchInput.value.trim();
+        const lowerQuery = query.toLowerCase();
         let visibleCount = 0;
 
+        // 保留原邏輯：若完全沒輸入且未點選任何標籤類別，隱藏所有卡片
         if (query === '' && currentCategory === 'all' && !document.querySelector('.tag-btn.active')) {
-            qaCards.forEach(card => card.style.display = 'none');
-            noResult.style.display = 'none';
+            qaCards.forEach(card => {
+                card.style.display = 'none';
+                restoreOriginalText(card);
+            });
+            if (noResult) noResult.style.display = 'none';
             return;
         }
 
         qaCards.forEach(card => {
-            const text = card.textContent.toLowerCase();
-            const category = card.getAttribute('data-category');
+            const category = card.getAttribute('data-category') || '';
+            const qEl = card.querySelector('.question');
+            const aEl = card.querySelector('.answer');
 
-            const matchesSearch = query === '' || text.includes(query);
+            // 先還原文字內容（移除舊高亮）
+            restoreOriginalText(card);
+
+            const text = card.textContent.toLowerCase();
+            const matchesSearch = query === '' || text.includes(lowerQuery);
             const matchesCategory = currentCategory === 'all' || category.includes(currentCategory);
 
             if (matchesSearch && matchesCategory) {
                 card.style.display = 'block';
                 visibleCount++;
+
+                // 有輸入關鍵字時執行文字高亮
+                if (query !== '') {
+                    highlightElement(qEl, query);
+                    highlightElement(aEl, query);
+                }
             } else {
                 card.style.display = 'none';
             }
         });
 
-        if (visibleCount === 0 && (query !== '' || currentCategory !== 'all')) {
-            noResult.style.display = 'block';
-        } else {
-            noResult.style.display = 'none';
+        if (noResult) {
+            if (visibleCount === 0 && (query !== '' || currentCategory !== 'all')) {
+                noResult.style.display = 'block';
+            } else {
+                noResult.style.display = 'none';
+            }
         }
+    }
+
+    // 還原原始 DOM 文字
+    function restoreOriginalText(card) {
+        const qEl = card.querySelector('.question');
+        const aEl = card.querySelector('.answer');
+        if (qEl && qEl.hasAttribute('data-original')) qEl.innerHTML = qEl.getAttribute('data-original');
+        if (aEl && aEl.hasAttribute('data-original')) aEl.innerHTML = aEl.getAttribute('data-original');
+    }
+
+    // 關鍵字高亮替換函式（避開 HTML 標籤）
+    function highlightElement(element, keyword) {
+        if (!element) return;
+        const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
+        
+        const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        let node;
+        while (node = walk.nextNode()) {
+            textNodes.push(node);
+        }
+
+        textNodes.forEach(textNode => {
+            if (regex.test(textNode.nodeValue)) {
+                const span = document.createElement('span');
+                span.innerHTML = textNode.nodeValue.replace(regex, '<mark class="search-highlight">$1</mark>');
+                textNode.parentNode.replaceChild(span, textNode);
+            }
+        });
+    }
+
+    // 轉義特殊字元，避免正規表達式出錯
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 </script>
 
