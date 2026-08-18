@@ -115,7 +115,7 @@
             box-shadow: 0 0 0 3px rgba(232, 116, 97, 0.15);
         }
 
-        /* ▼ 新增：關鍵字高亮樣式與搜尋框清除按鈕樣式 ▼ */
+        /* 關鍵字高亮樣式與搜尋框清除按鈕樣式 */
         mark.search-highlight {
             background-color: #ffe58f;
             color: #1f1f1f;
@@ -146,7 +146,6 @@
         .clear-search-btn:hover {
             color: var(--primary-color);
         }
-        /* ▲ 新增結束 ▲ */
 
         .filter-container {
             margin-top: 16px;
@@ -309,6 +308,156 @@
             font-weight: 700;
             color: var(--primary-color);
         }
+
+        /* 懸浮對話框與按鈕樣式 */
+        .chat-widget-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: none;
+            box-shadow: 0 4px 15px rgba(232, 116, 97, 0.4);
+            cursor: pointer;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .chat-widget-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(232, 116, 97, 0.5);
+        }
+        .chat-widget-btn img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .chat-window {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            width: 360px;
+            max-width: calc(100vw - 40px);
+            height: 520px;
+            max-height: calc(100vh - 120px);
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 1px solid var(--border-color);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9999;
+        }
+        .chat-header {
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chat-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .chat-header-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #ffffff;
+            object-fit: cover;
+        }
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+        .chat-close-btn:hover { opacity: 1; }
+        .chat-body {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #fcfbfa;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-msg {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+        .chat-msg.bot {
+            background: #ffffff;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .chat-msg.user {
+            background: var(--primary-color);
+            color: #ffffff;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-quick-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .quick-chip {
+            background: #f0eded;
+            color: var(--text-main);
+            font-size: 0.78rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .quick-chip:hover {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+        .chat-footer {
+            padding: 10px 12px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+        }
+        .chat-footer input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            outline: none;
+            font-size: 0.88rem;
+        }
+        .chat-footer button {
+            background: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.88rem;
+        }
     </style>
 </head>
 <body>
@@ -331,12 +480,11 @@
     </div>
 
     <div class="search-box">
-        <!-- ▼ 新增：搜尋框包覆容器與一鍵清除按鈕 ▼ -->
+        <!-- 搜尋框包覆容器與一鍵清除按鈕 -->
         <div class="search-input-wrapper">
             <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋（例如：標本、延遲、滑倒、抗生素、同意書）...">
             <button type="button" class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()" title="清除搜尋">✕</button>
         </div>
-        <!-- ▲ 新增結束 ▲ -->
         
         <div class="filter-container">
             <div class="filter-label">依醫策會 13 大通報類別篩選：</div>
@@ -1475,6 +1623,36 @@
     </footer>
 </div>
 
+<!-- 戴德森爺爺右下角懸浮按鈕與對話框 -->
+<button class="chat-widget-btn" id="chatToggleBtn" onclick="toggleChatWindow()" title="點擊諮詢戴德森病安爺爺">
+    <img src="https://lh3.googleusercontent.com/d/1d9ZUuzJu5eTQlxxaBQRj18KHjQyxyeh1" alt="戴德森爺爺">
+</button>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <div class="chat-header-title">
+            <img src="https://lh3.googleusercontent.com/d/1d9ZUuzJu5eTQlxxaBQRj18KHjQyxyeh1" alt="戴德森爺爺" class="chat-header-avatar">
+            <span>戴德森病安爺爺</span>
+        </div>
+        <button class="chat-close-btn" onclick="toggleChatWindow()">✕</button>
+    </div>
+    <div class="chat-body" id="chatBody">
+        <div class="chat-msg bot">
+            嗨!👋我是病安爺爺，今天有什麼關於病安通報的疑慮，可以直接跟我說喔！
+            <div class="chat-quick-tags">
+                <span class="quick-chip" onclick="sendQuickMsg('藥物給錯怎麼辦？')">藥物給錯</span>
+                <span class="quick-chip" onclick="sendQuickMsg('病人滑倒跌下床')">病人跌倒</span>
+                <span class="quick-chip" onclick="sendQuickMsg('標本打翻/標籤貼錯')">標本打翻</span>
+                <span class="quick-chip" onclick="sendQuickMsg('鼻胃管自拔')">管路自拔</span>
+            </div>
+        </div>
+    </div>
+    <div class="chat-footer">
+        <input type="text" id="chatInput" placeholder="請輸入您的問題..." onkeypress="handleChatKeyPress(event)">
+        <button onclick="sendChatMessage()">發送</button>
+    </div>
+</div>
+
 <script>
     // 搜尋與篩選邏輯
     const searchInput = document.getElementById('searchInput');
@@ -1600,6 +1778,58 @@
     // 轉義特殊字元，避免正規表達式出錯
     function escapeRegExp(string) {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // 戴德森爺爺對話框切換與互動邏輯
+    function toggleChatWindow() {
+        const chatWin = document.getElementById('chatWindow');
+        if (chatWin.style.display === 'flex') {
+            chatWin.style.display = 'none';
+        } else {
+            chatWin.style.display = 'flex';
+        }
+    }
+
+    function sendQuickMsg(msg) {
+        document.getElementById('chatInput').value = msg;
+        sendChatMessage();
+    }
+
+    function handleChatKeyPress(e) {
+        if (e.key === 'Enter') sendChatMessage();
+    }
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const chatBody = document.getElementById('chatBody');
+
+        // 顯示使用者訊息
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-msg user';
+        userMsg.textContent = text;
+        chatBody.appendChild(userMsg);
+
+        input.value = '';
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // 連動搜尋頁面上的關鍵字
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = text;
+            filterQA();
+        }
+
+        // 機器人簡易回覆
+        setTimeout(() => {
+            const botMsg = document.createElement('div');
+            botMsg.className = 'chat-msg bot';
+            botMsg.textContent = `已為您搜尋關鍵字「${text}」，請參考左側頁面對應的通報 Q&A！若有進一步疑問可撥打 8608 或 8629 諮詢。`;
+            chatBody.appendChild(botMsg);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }, 500);
     }
 </script>
 
