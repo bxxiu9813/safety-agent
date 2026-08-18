@@ -1730,6 +1730,7 @@
         filterQA();
     }
 
+    /* ===== 修正後的聯集搜尋邏輯 (支援檢體/標本等多關鍵字聯集) ===== */
     function filterQA() {
         const query = searchInput.value.trim();
         const lowerQuery = query.toLowerCase();
@@ -1744,6 +1745,12 @@
             return;
         }
 
+        // 1. 建立搜尋關鍵字聯集陣列
+        let searchKeywords = [lowerQuery];
+        if (lowerQuery.includes('檢體') || lowerQuery.includes('標本')) {
+            searchKeywords = Array.from(new Set([...searchKeywords, '檢體', '標本']));
+        }
+
         qaCards.forEach(card => {
             const category = card.getAttribute('data-category') || '';
             const qEl = card.querySelector('.question');
@@ -1752,7 +1759,9 @@
             restoreOriginalText(card);
 
             const text = card.textContent.toLowerCase();
-            const matchesSearch = query === '' || text.includes(lowerQuery);
+
+            // 2. 使用 OR 邏輯比對（只要符合聯集關鍵字中的任何一個即可）
+            const matchesSearch = query === '' || searchKeywords.some(kw => text.includes(kw));
             const matchesCategory = currentCategory === 'all' || category.includes(currentCategory);
 
             if (matchesSearch && matchesCategory) {
@@ -1760,8 +1769,11 @@
                 visibleCount++;
 
                 if (query !== '') {
-                    highlightElement(qEl, query);
-                    highlightElement(aEl, query);
+                    // 高亮所有符合的關鍵字
+                    searchKeywords.forEach(kw => {
+                        highlightElement(qEl, kw);
+                        highlightElement(aEl, kw);
+                    });
                 }
             } else {
                 card.style.display = 'none';
@@ -1785,7 +1797,7 @@
     }
 
     function highlightElement(element, keyword) {
-        if (!element) return;
+        if (!element || !keyword) return;
         const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
         
         const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
@@ -1808,7 +1820,7 @@
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    /* ===== 病安小幫手對話核心邏輯（直接解答） ===== */
+    /* ===== 病安小幫手對話核心邏輯 ===== */
 
     function toggleChatWindow() {
         const chatWin = document.getElementById('chatWindow');
@@ -1847,7 +1859,8 @@
 
         if (lowerText.includes("標本") || lowerText.includes("檢體") || lowerText.includes("打翻") || lowerText.includes("傾倒") || lowerText.includes("貼錯")) {
             responseText = "🧪 **【標本/檢體打翻與貼錯處置指引】**\n\n• **通報類別**：請選擇「檢查/檢驗/病理切片事件」。\n• **嚴重度判定**：\n 1. **可重新採檢**（如抽血、留尿）：且未影響治療時，嚴重度至少為「輕度」。\n 2. **無法再取得**（如切片組織、腦脊髓液）：依延誤診斷與對病情影響，判定為「中度」至「重度」。";
-            syncToSearch("標本");
+            // 關鍵修正：同步搜尋使用者輸入的原始詞（例如「檢體」），不再強制改為「標本」
+            syncToSearch(text.includes("檢體") ? "檢體" : "標本");
         } else if (lowerText.includes("跌倒") || lowerText.includes("滑倒") || lowerText.includes("床欄")) {
             responseText = "🦶 **【跌倒事件通報指引】**\n\n• **通報類別**：選擇「跌倒事件」。\n• **填報重點**：無論是否造成傷害（含未受傷），均需填報。請載明跌倒地點（浴室/病床邊）及當時防跌措施（如床欄是否拉起、地面是否潮濕）。門診或家屬跌倒亦需通報喔！";
             syncToSearch("跌倒");
@@ -1866,7 +1879,6 @@
         setTimeout(() => {
             const botMsg = document.createElement('div');
             botMsg.className = 'chat-msg bot';
-            // 將換行符號轉為 HTML <br>
             botMsg.innerHTML = responseText.replace(/\n/g, '<br>');
             chatBody.appendChild(botMsg);
             chatBody.scrollTop = chatBody.scrollHeight;
@@ -1884,3 +1896,4 @@
 </script>
 
 </body>
+</html>
