@@ -1608,6 +1608,47 @@
             <div class="question">1.醫師評估病人情況不穩，建議繼續住院治療，但病人堅持辦理出院，家屬與病人協議後先請假回家再返院治療。請假期間接獲急診室來電通知病人被送至醫院CPR。2.一般住院病人於請假外出時，在院外發生非預期心跳停止或車禍，是否通報?3.精神科病人於請假期間或院外就醫(含院外適應治療)時，發生跌倒或傷害行為(如：自傷、自殺死亡) 是否要通報?</div>
             <div class="answer">1.建議醫院檢討請假外出之核准原則，若有醫療處置上可避免之錯誤才通報至TPR之醫療照護事件。 2.TPR系統係收集發生於機構之病人安全事件為主，發生於機構外之事件，若與機構照護、評估等措施有關，可通報至TPR，否則毋須通報。病人請假期間發生的事(如:車禍)無法由醫院掌控，因此不須通報至TPR。 3.精神科病人院外就醫(含院外適應治療)或請假期間產生的傷害或意外，可能與藥物、評估、復健或環境等整體照護相關，因此可就其實際發生事件類型通報至TPR，建議應分析原因以作為後續改善。</div>
         </div>
+
+         <!-- 標本類別追加完整 QA -->
+        <div class="qa-card" data-category="檢查/檢驗/病理切片事件">
+            <span class="category-badge">檢查/檢驗/病理切片事件</span>
+            <div class="question">病人手術或檢驗時，檢體/標本打翻、傾倒或遺失導致無法送驗，嚴重度與類別該如何通報？</div>
+            <div class="answer">應通報「檢查/檢驗/病理切片事件」。嚴重度判定：若檢體可重新採檢（如抽血/尿液），且未造成延誤治療，至少為「輕度」；若檢體無法再取得（如手術切片、腦脊髓液）或再採檢品質無法等同，則視病情延誤及傷害程度判定為「中度」至「重度」。</div>
+        </div>
+
+        <div class="qa-card" data-category="檢查/檢驗/病理切片事件">
+            <span class="category-badge">檢查/檢驗/病理切片事件</span>
+            <div class="question">病人手術，術中切下組織標本送驗，但後來發現送出的標本無法確定是否為當初指定送檢的檢體，請問嚴重度該如何判斷？</div>
+            <div class="answer">若造成重新採檢之事件，對病人健康的影響程度至少為『輕度』；若此檢體無法再取得(病人組織切片)、取得不易(腦脊髓液)或是再採之檢體(飯前血糖)品質無法等同前一次之檢體遺失，則依據是否對病情延遲診斷或後續處置的影響程度判定嚴重度。</div>
+        </div>
+
+        <!-- 跌倒類別追加 QA -->
+        <div class="qa-card" data-category="跌倒事件">
+            <span class="category-badge">跌倒事件</span>
+            <div class="question">病人在病房、衛浴滑倒或從床邊跌落，該如何通報？門診或陪伴家屬跌倒也要通報嗎？</div>
+            <div class="answer">1. 住院病人無論是否造成傷害，於院內發生滑倒、跌落均需通報「跌倒事件」，並請依實際傷害（如擦傷、骨折）填報嚴重度。<br>2. 若為門診病人或陪伴家屬在院區內跌倒，仍需通報至 TPR「跌倒事件」或「公共意外事件」，以利檢視院區環境安全。</div>
+        </div>
+
+        <!-- 藥物類別 QA -->
+        <div class="qa-card" data-category="藥物事件">
+            <span class="category-badge">藥物事件</span>
+            <div class="question">護理師發現給錯藥物（開錯、劑量不符或給錯人），但在給藥前或給藥後及時處置，該如何通報？</div>
+            <div class="answer">1. 若在藥物接觸到病人前即給予攔截（未給予），通報為「跡近錯失（Near Miss）」。<br>2. 若已給予病人，無論病人是否有異常反應，均需通報「藥物事件」，並持續觀察生命徵象，嚴重度依後續臨床處理狀況（如是否需要解毒劑或密切監視）評估。</div>
+        </div>
+
+        <!-- 管路類別 QA -->
+        <div class="qa-card" data-category="管路事件">
+            <span class="category-badge">管路事件</span>
+            <div class="question">病人自行拔除鼻胃管（NG）、尿管或點滴管路，是否需要通報？</div>
+            <div class="answer">需通報「管路事件」。應記錄管路種類、病人當時之意識狀態、是否有約束措施，以及重新留置管路過程是否順利。若因自拔造成組織出血或需額外處置，需調整嚴重度等級。</div>
+        </div>
+
+        <!-- 不需通報類別 QA -->
+        <div class="qa-card no-report" data-category="不需通報">
+            <span class="category-badge" style="background:#f3f0ee; color:#55585a; border-color:#d8d3d0;">不需通報 / 非TPR範疇</span>
+            <div class="question">1.醫師評估病人情況不穩，建議繼續住院治療...</div>
+            <div class="answer">1.建議醫院檢討請假外出之核准原則...</div>
+        </div>
         
     </div>
 
@@ -1640,10 +1681,10 @@
         <div class="chat-msg bot">
             嗨!👋今天有什麼關於病安通報的疑慮，可以直接跟我說喔！
             <div class="chat-quick-tags">
-                <span class="quick-chip" onclick="sendQuickMsg('藥物給錯怎麼辦？')">藥物給錯</span>
-                <span class="quick-chip" onclick="sendQuickMsg('病人滑倒跌下床')">病人跌倒</span>
-                <span class="quick-chip" onclick="sendQuickMsg('標本打翻/標籤貼錯')">標本打翻</span>
-                <span class="quick-chip" onclick="sendQuickMsg('鼻胃管自拔')">管路自拔</span>
+                <span class="quick-chip" onclick="handleChipClick('藥物給錯怎麼辦？')">藥物給錯</span>
+                <span class="quick-chip" onclick="handleChipClick('病人滑倒跌下床')">病人跌倒</span>
+                <span class="quick-chip" onclick="handleChipClick('標本打翻/標籤貼錯')">標本打翻/貼錯</span>
+                <span class="quick-chip" onclick="handleChipClick('鼻胃管自拔')">管路自拔</span>
             </div>
         </div>
     </div>
@@ -1654,7 +1695,6 @@
 </div>
 
 <script>
-    // 搜尋與篩選邏輯
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
     const qaCards = document.querySelectorAll('.qa-card');
@@ -1663,7 +1703,6 @@
 
     let currentCategory = 'all';
 
-    // 初始化保存每一張卡片的原始 HTML 內容（高亮還原用）
     qaCards.forEach(card => {
         const qEl = card.querySelector('.question');
         const aEl = card.querySelector('.answer');
@@ -1701,7 +1740,6 @@
         const lowerQuery = query.toLowerCase();
         let visibleCount = 0;
 
-        // 保留原邏輯：若完全沒輸入且未點選任何標籤類別，隱藏所有卡片
         if (query === '' && currentCategory === 'all' && !document.querySelector('.tag-btn.active')) {
             qaCards.forEach(card => {
                 card.style.display = 'none';
@@ -1716,7 +1754,6 @@
             const qEl = card.querySelector('.question');
             const aEl = card.querySelector('.answer');
 
-            // 先還原文字內容（移除舊高亮）
             restoreOriginalText(card);
 
             const text = card.textContent.toLowerCase();
@@ -1727,7 +1764,6 @@
                 card.style.display = 'block';
                 visibleCount++;
 
-                // 有輸入關鍵字時執行文字高亮
                 if (query !== '') {
                     highlightElement(qEl, query);
                     highlightElement(aEl, query);
@@ -1746,7 +1782,6 @@
         }
     }
 
-    // 還原原始 DOM 文字
     function restoreOriginalText(card) {
         const qEl = card.querySelector('.question');
         const aEl = card.querySelector('.answer');
@@ -1754,7 +1789,6 @@
         if (aEl && aEl.hasAttribute('data-original')) aEl.innerHTML = aEl.getAttribute('data-original');
     }
 
-    // 關鍵字高亮替換函式（避開 HTML 標籤）
     function highlightElement(element, keyword) {
         if (!element) return;
         const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
@@ -1775,24 +1809,19 @@
         });
     }
 
-    // 轉義特殊字元，避免正規表達式出錯
     function escapeRegExp(string) {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    // 戴德森爺爺對話框切換與互動邏輯
+    /* ===== 病安小幫手對話核心邏輯（直接解答） ===== */
+
     function toggleChatWindow() {
         const chatWin = document.getElementById('chatWindow');
-        if (chatWin.style.display === 'flex') {
-            chatWin.style.display = 'none';
-        } else {
-            chatWin.style.display = 'flex';
-        }
+        chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
     }
 
-    function sendQuickMsg(msg) {
-        document.getElementById('chatInput').value = msg;
-        sendChatMessage();
+    function handleChipClick(msgText) {
+        processUserQuery(msgText);
     }
 
     function handleChatKeyPress(e) {
@@ -1803,35 +1832,60 @@
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
         if (!text) return;
+        input.value = '';
+        processUserQuery(text);
+    }
 
+    function processUserQuery(text) {
         const chatBody = document.getElementById('chatBody');
 
-        // 顯示使用者訊息
+        // 1. 顯示使用者發送訊息
         const userMsg = document.createElement('div');
         userMsg.className = 'chat-msg user';
         userMsg.textContent = text;
         chatBody.appendChild(userMsg);
-
-        input.value = '';
         chatBody.scrollTop = chatBody.scrollHeight;
 
-        // 連動搜尋頁面上的關鍵字
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.value = text;
-            filterQA();
+        // 2. 智慧判定回覆內容
+        let responseText = "";
+        const lowerText = text.toLowerCase();
+
+        if (lowerText.includes("標本") || lowerText.includes("檢體") || lowerText.includes("打翻") || lowerText.includes("傾倒") || lowerText.includes("貼錯")) {
+            responseText = "🧪 **【標本/檢體打翻與貼錯處置指引】**\n\n• **通報類別**：請選擇「檢查/檢驗/病理切片事件」。\n• **嚴重度判定**：\n 1. **可重新採檢**（如抽血、留尿）：且未影響治療時，嚴重度至少為「輕度」。\n 2. **無法再取得**（如切片組織、腦脊髓液）：依延誤診斷與對病情影響，判定為「中度」至「重度」。";
+            syncToSearch("標本");
+        } else if (lowerText.includes("跌倒") || lowerText.includes("滑倒") || lowerText.includes("床欄")) {
+            responseText = "🦶 **【跌倒事件通報指引】**\n\n• **通報類別**：選擇「跌倒事件」。\n• **填報重點**：無論是否造成傷害（含未受傷），均需填報。請載明跌倒地點（浴室/病床邊）及當時防跌措施（如床欄是否拉起、地面是否潮濕）。門診或家屬跌倒亦需通報喔！";
+            syncToSearch("跌倒");
+        } else if (lowerText.includes("藥") || lowerText.includes("給錯")) {
+            responseText = "💊 **【藥物事件通報指引】**\n\n• **未給到病人（及時攔截）**：通報為「跡近錯失（Near Miss）」。\n• **已給到病人**：選擇「藥物事件」。請詳細註明藥物名稱、劑量差異與病人目前生命徵象。";
+            syncToSearch("藥物");
+        } else if (lowerText.includes("管") || lowerText.includes("自拔") || lowerText.includes("鼻胃管")) {
+            responseText = "🩺 **【管路事件通報指引】**\n\n• **通報類別**：選擇「管路事件」。\n• **填報重點**：記錄管路種類（NG/尿管/CVC）、病人意識狀態、約束情況，及重新置管是否順利。";
+            syncToSearch("管路");
+        } else {
+            responseText = `已為您同步搜尋關鍵字「${text}」，請參考左側頁面問答列表！若有複雜疑義，歡迎直接撥打分機 8608 或 8629 諮詢病安科。`;
+            syncToSearch(text);
         }
 
-        // 機器人簡易回覆
+        // 3. 機器人生成回覆
         setTimeout(() => {
             const botMsg = document.createElement('div');
             botMsg.className = 'chat-msg bot';
-            botMsg.textContent = `已為您搜尋關鍵字「${text}」，請參考左側頁面對應的通報 Q&A！若有進一步疑問可撥打 8608 或 8629 諮詢。`;
+            // 將換行符號轉為 HTML <br>
+            botMsg.innerHTML = responseText.replace(/\n/g, '<br>');
             chatBody.appendChild(botMsg);
             chatBody.scrollTop = chatBody.scrollHeight;
-        }, 500);
+        }, 300);
+    }
+
+    // 輔助函式：連動主頁面搜尋框
+    function syncToSearch(keyword) {
+        if (searchInput) {
+            searchInput.value = keyword;
+            toggleClearBtn();
+            filterQA();
+        }
     }
 </script>
 
 </body>
-</html>
