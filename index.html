@@ -1703,31 +1703,36 @@ body {
 </div>
 
 <script>
-/* ===== 跨裝置真即時瀏覽計數器 ===== */
+/* ===== 跨裝置真即時瀏覽計數器（從 1 開始跳動） ===== */
 (function initCleanCounter() {
     const counterEl = document.getElementById('visitCounter');
     if (!counterEl) return;
 
-    // 使用極度穩定的 hit.as 跨裝置雲端計數器
-    const namespace = "cych_patient_safety_qa_2026";
+    // 專屬計數器名稱
+    const key = 'cych_patient_safety_2026_v3';
     
-    fetch(`https://api.hit.as/v1/hit/${namespace}`)
-        .then(res => res.json())
+    fetch(`https://api.countapi.xyz/hit/cych_hospital_qa/${key}`)
+        .then(res => {
+            if (!res.ok) throw new Error('Network error');
+            return res.json();
+        })
         .then(data => {
-            // 成功取得跨裝置累加總數
-            if (data && data.hits) {
-                renderDigits(data.hits);
+            if (data && typeof data.value !== 'undefined') {
+                renderDigits(data.value);
             } else {
-                fallbackLocal();
+                useFallback();
             }
         })
         .catch(() => {
-            // 若請求失敗的備援機制
-            fallbackLocal();
+            // 備用 API 點
+            fetch(`https://api.counterapi.dev/v1/cych_patient_safety_2026_v3/up`)
+                .then(r => r.json())
+                .then(d => renderDigits(d.count || d.value || 1))
+                .catch(() => useFallback());
         });
 
-    function fallbackLocal() {
-        let count = parseInt(localStorage.getItem('cych_fallback_count') || '105', 10) + 1;
+    function useFallback() {
+        let count = parseInt(localStorage.getItem('cych_fallback_count') || '0', 10) + 1;
         localStorage.setItem('cych_fallback_count', count);
         renderDigits(count);
     }
@@ -1739,7 +1744,6 @@ body {
         ).join('');
     }
 })();
-
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
     const qaCards = document.querySelectorAll('.qa-card');
