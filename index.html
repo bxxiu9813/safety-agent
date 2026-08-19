@@ -1905,52 +1905,38 @@
             filterQA();
         }
     }
-/* ===== 全院同步雲端計數器 (修正完整版) ===== */
+/* ===== 全院純真實雲端計數器 (無備援機制) ===== */
     function initGlobalCounter() {
         const countEl = document.getElementById('visitCount');
         if (!countEl) return;
 
-        // 使用 countapi.xyz 的公共免費 API (穩定性更高、無跨網域問題)
-        const apiUrl = 'https://api.countapi.xyz/hit/cych-patient-safety-tpr/page-visits';
+        // 預設先顯示載入狀態
+        countEl.innerText = '載入中...';
+
+        // 雲端點閱計數 API
+        const apiUrl = 'https://api.counterapi.dev/v1/cych-patient-safety-tpr/visits/up';
 
         fetch(apiUrl)
             .then(response => {
-                if (!response.ok) throw new Error('網路回應異常');
+                if (!response.ok) {
+                    throw new Error('網路回應異常');
+                }
                 return response.json();
             })
             .then(data => {
-                // 抓取回傳的 value 或 count 數字
-                const totalCount = data.value || data.count;
-                
-                if (totalCount !== undefined) {
-                    // 成功抓到雲端數字！所有人顯示完全同步的數字
-                    countEl.innerText = Number(totalCount).toLocaleString();
-                    console.log('✅ 雲端計數器同步成功，目前總人次：', totalCount);
+                // 只有成功拿到真實雲端數字時，才更新畫面
+                if (data && typeof data.count === 'number') {
+                    countEl.innerText = data.count.toLocaleString();
+                    console.log('✅ 成功取得真實雲端總瀏覽次數：', data.count);
                 } else {
-                    console.warn('⚠️ 雲端資料格式不符，切換至備援');
-                    fallbackLocal();
+                    countEl.innerText = '無法取得數據';
                 }
             })
             .catch(error => {
-                console.warn('❌ 雲端計數器連線失敗，切換至備用計數模式:', error);
-                fallbackLocal();
+                console.warn('❌ 雲端 API 連線受限或斷網:', error);
+                // 斷網或被防火牆擋住時，顯示載入/連線問題，絕不帶入假數字
+                countEl.innerText = '無法連線';
             });
-    }
-
-    // 備援機制 (僅在完全斷網或 API 壞掉時啟動)
-    function fallbackLocal() {
-        const countEl = document.getElementById('visitCount');
-        if (!countEl) return;
-        
-        // 💡 將 key 名稱加上固定後綴，確保不被舊資料干擾
-        let count = localStorage.getItem('cych_tpr_fallback_count');
-        if (!count) {
-            count = 15; // 預設值
-        } else {
-            count = parseInt(count, 10) + 1;
-        }
-        localStorage.setItem('cych_tpr_fallback_count', count);
-        countEl.innerText = Number(count).toLocaleString();
     }
 
     // 啟動計數器
