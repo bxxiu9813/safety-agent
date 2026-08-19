@@ -1694,225 +1694,235 @@ body {
     </div>
 </div>
 
-    <script>
-        /* ===== 免外連網絡的本地計數器邏輯 (自動補 0) ===== */
-        (function initLocalCounter() {
-            let count = localStorage.getItem('cych_qa_views');
-            if (!count) {
-                count = 1001; // 設定初始底數
-            } else {
-                count = parseInt(count, 10) + 1;
-            }
-            localStorage.setItem('cych_qa_views', count);
-            
-            const counterEl = document.getElementById('visitCounter');
-            if (counterEl) {
-                counterEl.textContent = String(count).padStart(6, '0');
-            }
-        })();
+<script>
+    /* ===== 跨裝置同步計數器（從 0 開始累計，雙端同步） ===== */
+    (function initGlobalCounter() {
+        // 使用新的 key 名稱，讓雲端重置並從 0 開始累計
+        const namespace = 'cych_patient_safety_qa_2026';
+        const key = 'page_views_v0';
+        const counterEl = document.getElementById('visitCounter');
 
-        const searchInput = document.getElementById('searchInput');
-        const clearBtn = document.getElementById('clearSearchBtn');
-        const qaCards = document.querySelectorAll('.qa-card');
-        const noResult = document.getElementById('noResult');
-        const tagBtns = document.querySelectorAll('.tag-btn');
+        // 呼叫雲端計數 API (+1)
+        fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
+            .then(response => response.json())
+            .then(data => {
+                if (counterEl && data.value !== undefined) {
+                    // 自動補零至 6 位數（第一個訪客為 000001）
+                    counterEl.textContent = String(data.value).padStart(6, '0');
+                }
+            })
+            .catch(err => {
+                // 若院內資安擋掉外部 API，自動降級為本機紀錄（從 0 開始）
+                let count = parseInt(localStorage.getItem('cych_qa_views_v0') || '0', 10) + 1;
+                localStorage.setItem('cych_qa_views_v0', count);
+                if (counterEl) {
+                    counterEl.textContent = String(count).padStart(6, '0');
+                }
+            });
+    })();
 
-        let currentCategory = 'all';
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
+    const qaCards = document.querySelectorAll('.qa-card');
+    const noResult = document.getElementById('noResult');
+    const tagBtns = document.querySelectorAll('.tag-btn');
+
+    let currentCategory = 'all';
+
+    qaCards.forEach(card => {
+        const qEl = card.querySelector('.question');
+        const aEl = card.querySelector('.answer');
+        if (qEl) qEl.setAttribute('data-original', qEl.innerHTML);
+        if (aEl) aEl.setAttribute('data-original', aEl.innerHTML);
+    });
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            toggleClearBtn();
+            filterQA();
+        });
+    }
+
+    function toggleClearBtn() {
+        if (clearBtn && searchInput) {
+            clearBtn.style.display = searchInput.value.trim() !== '' ? 'block' : 'none';
+        }
+    }
+
+    function clearSearch() {
+        if (searchInput) {
+            searchInput.value = '';
+            toggleClearBtn();
+            filterQA();
+            searchInput.focus();
+        }
+    }
+
+    function selectCategory(category, btn) {
+        currentCategory = category;
+        tagBtns.forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        filterQA();
+    }
+
+    function filterQA() {
+        if (!searchInput) return;
+        const query = searchInput.value.trim();
+        const lowerQuery = query.toLowerCase();
+        let visibleCount = 0;
+
+        if (query === '' && currentCategory === 'all' && !document.querySelector('.tag-btn.active')) {
+            qaCards.forEach(card => {
+                card.style.display = 'none';
+                restoreOriginalText(card);
+            });
+            if (noResult) noResult.style.display = 'none';
+            return;
+        }
+
+        let searchKeywords = [lowerQuery];
+        if (lowerQuery.includes('檢體') || lowerQuery.includes('標本')) {
+            searchKeywords = Array.from(new Set([...searchKeywords, '檢體', '標本']));
+        }
 
         qaCards.forEach(card => {
+            const category = card.getAttribute('data-category') || '';
             const qEl = card.querySelector('.question');
             const aEl = card.querySelector('.answer');
-            if (qEl) qEl.setAttribute('data-original', qEl.innerHTML);
-            if (aEl) aEl.setAttribute('data-original', aEl.innerHTML);
+
+            restoreOriginalText(card);
+
+            const text = card.textContent.toLowerCase();
+            const matchesSearch = query === '' || searchKeywords.some(kw => text.includes(kw));
+            const matchesCategory = currentCategory === 'all' || category.includes(currentCategory);
+
+            if (matchesSearch && matchesCategory) {
+                card.style.display = 'block';
+                visibleCount++;
+
+                if (query !== '') {
+                    searchKeywords.forEach(kw => {
+                        highlightElement(qEl, kw);
+                        highlightElement(aEl, kw);
+                    });
+                }
+            } else {
+                card.style.display = 'none';
+            }
         });
 
+        if (noResult) {
+            if (visibleCount === 0 && (query !== '' || currentCategory !== 'all')) {
+                noResult.style.display = 'block';
+            } else {
+                noResult.style.display = 'none';
+            }
+        }
+    }
+
+    function restoreOriginalText(card) {
+        const qEl = card.querySelector('.question');
+        const aEl = card.querySelector('.answer');
+        if (qEl && qEl.hasAttribute('data-original')) qEl.innerHTML = qEl.getAttribute('data-original');
+        if (aEl && aEl.hasAttribute('data-original')) aEl.innerHTML = aEl.getAttribute('data-original');
+    }
+
+    function highlightElement(element, keyword) {
+        if (!element || !keyword) return;
+        const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
+        
+        const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        let node;
+        while (node = walk.nextNode()) {
+            textNodes.push(node);
+        }
+
+        textNodes.forEach(textNode => {
+            if (regex.test(textNode.nodeValue)) {
+                const span = document.createElement('span');
+                span.innerHTML = textNode.nodeValue.replace(regex, '<mark class="search-highlight">$1</mark>');
+                textNode.parentNode.replaceChild(span, textNode);
+            }
+        });
+    }
+
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    /* ===== 病安小幫手對話核心邏輯 ===== */
+    function toggleChatWindow() {
+        const chatWin = document.getElementById('chatWindow');
+        if (chatWin) {
+            chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
+        }
+    }
+
+    function handleChipClick(msgText) {
+        processUserQuery(msgText);
+    }
+
+    function handleChatKeyPress(e) {
+        if (e.key === 'Enter') sendChatMessage();
+    }
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        processUserQuery(text);
+    }
+
+    function processUserQuery(text) {
+        const chatBody = document.getElementById('chatBody');
+        if (!chatBody) return;
+
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-msg user';
+        userMsg.textContent = text;
+        chatBody.appendChild(userMsg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        let responseText = "";
+        const lowerText = text.toLowerCase();
+
+        if (lowerText.includes("標本") || lowerText.includes("檢體") || lowerText.includes("打翻") || lowerText.includes("傾倒") || lowerText.includes("貼錯")) {
+            responseText = "🧪 **【標本/檢體打翻與貼錯處置指引】**\n\n• **通報類別**：請選擇「檢查/檢驗/病理切片事件」。\n• **嚴重度判定**：\n 1. **可重新採檢**（如抽血、留尿）：且未影響治療時，嚴重度至少為「輕度」。\n 2. **無法再取得**（如切片組織、腦脊髓液）：依延誤診斷與對病情影響，判定為「中度」至「重度」。";
+            syncToSearch(text.includes("檢體") ? "檢體" : "標本");
+        } else if (lowerText.includes("跌倒") || lowerText.includes("滑倒") || lowerText.includes("床欄")) {
+            responseText = "🦶 **【跌倒事件通報指引】**\n\n• **通報類別**：選擇「跌倒事件」。\n• **填報重點**：無論是否造成傷害（含未受傷），均需填報。請載明跌倒地點（浴室/病床邊）及當時防跌措施（如床欄是否拉起、地面是否潮濕）。門診或家屬跌倒亦需通報喔！";
+            syncToSearch("跌倒");
+        } else if (lowerText.includes("藥") || lowerText.includes("給錯")) {
+            responseText = "💊 **【藥物事件通報指引】**\n\n• **未給到病人（及時攔截）**：通報為「跡近錯失（Near Miss）」。\n• **已給到病人**：選擇「藥物事件」。請詳細註明藥物名稱、劑量差異與病人目前生命徵象。";
+            syncToSearch("藥物");
+        } else if (lowerText.includes("管") || lowerText.includes("自拔") || lowerText.includes("鼻胃管")) {
+            responseText = "🩺 **【管路事件通報指引】**\n\n• **通報類別**：選擇「管路事件」。\n• **填報重點**：記錄管路種類（NG/尿管/CVC）、病人意識狀態、約束情況，及重新置管是否順利。";
+            syncToSearch("管路");
+        } else {
+            responseText = `已為您同步搜尋關鍵字「${text}」，請參考左側頁面問答列表！若有複雜疑義，歡迎直接撥打分機 8608 或 8629 詢問。`;
+            syncToSearch(text);
+        }
+
+        setTimeout(() => {
+            const botMsg = document.createElement('div');
+            botMsg.className = 'chat-msg bot';
+            botMsg.innerHTML = responseText.replace(/\n/g, '<br>');
+            chatBody.appendChild(botMsg);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }, 300);
+    }
+
+    function syncToSearch(keyword) {
         if (searchInput) {
-            searchInput.addEventListener('input', () => {
-                toggleClearBtn();
-                filterQA();
-            });
-        }
-
-        function toggleClearBtn() {
-            if (clearBtn && searchInput) {
-                clearBtn.style.display = searchInput.value.trim() !== '' ? 'block' : 'none';
-            }
-        }
-
-        function clearSearch() {
-            if (searchInput) {
-                searchInput.value = '';
-                toggleClearBtn();
-                filterQA();
-                searchInput.focus();
-            }
-        }
-
-        function selectCategory(category, btn) {
-            currentCategory = category;
-            tagBtns.forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
+            searchInput.value = keyword;
+            toggleClearBtn();
             filterQA();
         }
-
-        function filterQA() {
-            if (!searchInput) return;
-            const query = searchInput.value.trim();
-            const lowerQuery = query.toLowerCase();
-            let visibleCount = 0;
-
-            if (query === '' && currentCategory === 'all' && !document.querySelector('.tag-btn.active')) {
-                qaCards.forEach(card => {
-                    card.style.display = 'none';
-                    restoreOriginalText(card);
-                });
-                if (noResult) noResult.style.display = 'none';
-                return;
-            }
-
-            let searchKeywords = [lowerQuery];
-            if (lowerQuery.includes('檢體') || lowerQuery.includes('標本')) {
-                searchKeywords = Array.from(new Set([...searchKeywords, '檢體', '標本']));
-            }
-
-            qaCards.forEach(card => {
-                const category = card.getAttribute('data-category') || '';
-                const qEl = card.querySelector('.question');
-                const aEl = card.querySelector('.answer');
-
-                restoreOriginalText(card);
-
-                const text = card.textContent.toLowerCase();
-                const matchesSearch = query === '' || searchKeywords.some(kw => text.includes(kw));
-                const matchesCategory = currentCategory === 'all' || category.includes(currentCategory);
-
-                if (matchesSearch && matchesCategory) {
-                    card.style.display = 'block';
-                    visibleCount++;
-
-                    if (query !== '') {
-                        searchKeywords.forEach(kw => {
-                            highlightElement(qEl, kw);
-                            highlightElement(aEl, kw);
-                        });
-                    }
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            if (noResult) {
-                if (visibleCount === 0 && (query !== '' || currentCategory !== 'all')) {
-                    noResult.style.display = 'block';
-                } else {
-                    noResult.style.display = 'none';
-                }
-            }
-        }
-
-        function restoreOriginalText(card) {
-            const qEl = card.querySelector('.question');
-            const aEl = card.querySelector('.answer');
-            if (qEl && qEl.hasAttribute('data-original')) qEl.innerHTML = qEl.getAttribute('data-original');
-            if (aEl && aEl.hasAttribute('data-original')) aEl.innerHTML = aEl.getAttribute('data-original');
-        }
-
-        function highlightElement(element, keyword) {
-            if (!element || !keyword) return;
-            const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
-            
-            const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-            const textNodes = [];
-            let node;
-            while (node = walk.nextNode()) {
-                textNodes.push(node);
-            }
-
-            textNodes.forEach(textNode => {
-                if (regex.test(textNode.nodeValue)) {
-                    const span = document.createElement('span');
-                    span.innerHTML = textNode.nodeValue.replace(regex, '<mark class="search-highlight">$1</mark>');
-                    textNode.parentNode.replaceChild(span, textNode);
-                }
-            });
-        }
-
-        function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
-        /* ===== 病安小幫手對話核心邏輯 ===== */
-        function toggleChatWindow() {
-            const chatWin = document.getElementById('chatWindow');
-            if (chatWin) {
-                chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
-            }
-        }
-
-        function handleChipClick(msgText) {
-            processUserQuery(msgText);
-        }
-
-        function handleChatKeyPress(e) {
-            if (e.key === 'Enter') sendChatMessage();
-        }
-
-        function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            if (!input) return;
-            const text = input.value.trim();
-            if (!text) return;
-            input.value = '';
-            processUserQuery(text);
-        }
-
-        function processUserQuery(text) {
-            const chatBody = document.getElementById('chatBody');
-            if (!chatBody) return;
-
-            const userMsg = document.createElement('div');
-            userMsg.className = 'chat-msg user';
-            userMsg.textContent = text;
-            chatBody.appendChild(userMsg);
-            chatBody.scrollTop = chatBody.scrollHeight;
-
-            let responseText = "";
-            const lowerText = text.toLowerCase();
-
-            if (lowerText.includes("標本") || lowerText.includes("檢體") || lowerText.includes("打翻") || lowerText.includes("傾倒") || lowerText.includes("貼錯")) {
-                responseText = "🧪 **【標本/檢體打翻與貼錯處置指引】**\n\n• **通報類別**：請選擇「檢查/檢驗/病理切片事件」。\n• **嚴重度判定**：\n 1. **可重新採檢**（如抽血、留尿）：且未影響治療時，嚴重度至少為「輕度」。\n 2. **無法再取得**（如切片組織、腦脊髓液）：依延誤診斷與對病情影響，判定為「中度」至「重度」。";
-                syncToSearch(text.includes("檢體") ? "檢體" : "標本");
-            } else if (lowerText.includes("跌倒") || lowerText.includes("滑倒") || lowerText.includes("床欄")) {
-                responseText = "🦶 **【跌倒事件通報指引】**\n\n• **通報類別**：選擇「跌倒事件」。\n• **填報重點**：無論是否造成傷害（含未受傷），均需填報。請載明跌倒地點（浴室/病床邊）及當時防跌措施（如床欄是否拉起、地面是否潮濕）。門診或家屬跌倒亦需通報喔！";
-                syncToSearch("跌倒");
-            } else if (lowerText.includes("藥") || lowerText.includes("給錯")) {
-                responseText = "💊 **【藥物事件通報指引】**\n\n• **未給到病人（及時攔截）**：通報為「跡近錯失（Near Miss）」。\n• **已給到病人**：選擇「藥物事件」。請詳細註明藥物名稱、劑量差異與病人目前生命徵象。";
-                syncToSearch("藥物");
-            } else if (lowerText.includes("管") || lowerText.includes("自拔") || lowerText.includes("鼻胃管")) {
-                responseText = "🩺 **【管路事件通報指引】**\n\n• **通報類別**：選擇「管路事件」。\n• **填報重點**：記錄管路種類（NG/尿管/CVC）、病人意識狀態、約束情況，及重新置管是否順利。";
-                syncToSearch("管路");
-            } else {
-                responseText = `已為您同步搜尋關鍵字「${text}」，請參考左側頁面問答列表！若有複雜疑義，歡迎直接撥打分機 8608 或 8629 詢問。`;
-                syncToSearch(text);
-            }
-
-            setTimeout(() => {
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chat-msg bot';
-                botMsg.innerHTML = responseText.replace(/\n/g, '<br>');
-                chatBody.appendChild(botMsg);
-                chatBody.scrollTop = chatBody.scrollHeight;
-            }, 300);
-        }
-
-        function syncToSearch(keyword) {
-            if (searchInput) {
-                searchInput.value = keyword;
-                toggleClearBtn();
-                filterQA();
-            }
-        }
-    </script>
+    }
+</script>
 
 </body>
 </html>
