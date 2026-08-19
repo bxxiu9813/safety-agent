@@ -1703,32 +1703,42 @@ body {
 </div>
 
 <script>
-    /* ===== 雲端跨裝置同步數字渲染邏輯 ===== */
-    (function initCleanCounter() {
-        const counterEl = document.getElementById('visitCounter');
-        if (!counterEl) return;
+/* ===== 跨裝置真即時瀏覽計數器 ===== */
+(function initCleanCounter() {
+    const counterEl = document.getElementById('visitCounter');
+    if (!counterEl) return;
 
-        // 向穩定雲端 API 發送計數請求
-        fetch('https://api.counterapi.dev/v1/cych_patient_safety_2026_clean/views/up')
-            .then(res => res.json())
-            .then(data => {
-                const count = data.count || data.value;
-                if (count) renderDigits(count);
-            })
-            .catch(() => {
-                // 防護牆擋住時的離線備援
-                let localCount = parseInt(localStorage.getItem('cych_clean_views') || '128', 10) + 1;
-                localStorage.setItem('cych_clean_views', localCount);
-                renderDigits(localCount);
-            });
+    // 使用極度穩定的 hit.as 跨裝置雲端計數器
+    const namespace = "cych_patient_safety_qa_2026";
+    
+    fetch(`https://api.hit.as/v1/hit/${namespace}`)
+        .then(res => res.json())
+        .then(data => {
+            // 成功取得跨裝置累加總數
+            if (data && data.hits) {
+                renderDigits(data.hits);
+            } else {
+                fallbackLocal();
+            }
+        })
+        .catch(() => {
+            // 若請求失敗的備援機制
+            fallbackLocal();
+        });
 
-        function renderDigits(num) {
-            const strNum = String(num).padStart(6, '0');
-            counterEl.innerHTML = strNum.split('').map(d => 
-                `<span style="background: #fff; border: 1px solid #ccc; padding: 2px 6px; border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); color: #0056b3;">${d}</span>`
-            ).join('');
-        }
-    })();
+    function fallbackLocal() {
+        let count = parseInt(localStorage.getItem('cych_fallback_count') || '105', 10) + 1;
+        localStorage.setItem('cych_fallback_count', count);
+        renderDigits(count);
+    }
+
+    function renderDigits(num) {
+        const strNum = String(num).padStart(6, '0');
+        counterEl.innerHTML = strNum.split('').map(d => 
+            `<span style="background: #fff; border: 1px solid #ccc; padding: 2px 6px; border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); color: #0056b3;">${d}</span>`
+        ).join('');
+    }
+})();
 
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
