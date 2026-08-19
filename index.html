@@ -1651,12 +1651,12 @@ body {
     </div>
 
     <div class="no-result" id="noResult">沒有找到符合條件的通報問答。</div>
-<!-- 頁腳聯絡與諮詢備註 (改為完全無需外連圖片的純前端計數器，防護牆 100% 穿透) -->
+<!-- 頁腳聯絡與諮詢備註 -->
     <footer>
         <div class="contact-card">
             <div style="font-size: 0.95em; color: #555; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
                 <span>📊 本站總瀏覽人次：</span>
-                <span id="visitCounter" class="local-counter-badge">000000</span>
+                <img src="https://count.getloli.com/get/@cych_patient_safety_2026?theme=asoul" alt="Visit Counter" style="vertical-align: middle; height: 32px;" />
                 <span>次</span>
             </div>
             <p>📌 如有其他疑問，請聯絡分機 <strong>8608</strong> 或 <strong>8629</strong></p>
@@ -1695,49 +1695,6 @@ body {
 </div>
 
 <script>
-    /* ===== 全球雲端跨裝置同步計數器（GET極速版） ===== */
-    (function initGlobalCounter() {
-        const counterEl = document.getElementById('visitCounter');
-        if (!counterEl) return;
-
-        // 使用穩定的雲端 API，使用 GET 請求避開醫院防火牆與 POST 限制
-        // key 設定為獨立識別碼，避免與他人重複
-        const counterNamespace = 'cych_patient_safety_2026_v2';
-        const counterKey = 'main_views';
-        
-        // 發送 API 請求（加上 timestamp 避免手機瀏覽器快取舊數字）
-        const apiUrl = `https://api.counterapi.dev/v1/${counterNamespace}/${counterKey}/up`;
-
-        fetch(apiUrl)
-            .then(res => {
-                if (!res.ok) throw new Error('API Error');
-                return res.json();
-            })
-            .then(data => {
-                // 取得雲端回傳的累計數字
-                const count = data.count || data.value;
-                if (count !== undefined && count !== null) {
-                    counterEl.textContent = String(count).padStart(6, '0');
-                } else {
-                    throw new Error('Invalid Data');
-                }
-            })
-            .catch(err => {
-                // 備援：若連線完全斷開，改用無障礙 CountAPI 備用節點
-                fetch(`https://count.getloli.com/get/@${counterNamespace}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data && data.up) counterEl.textContent = String(data.up).padStart(6, '0');
-                    })
-                    .catch(() => {
-                        // 本機遞增備援
-                        let localCount = parseInt(localStorage.getItem('cych_fallback_views') || '100', 10) + 1;
-                        localStorage.setItem('cych_fallback_views', localCount);
-                        counterEl.textContent = String(localCount).padStart(6, '0');
-                    });
-            });
-    })();
-
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
     const qaCards = document.querySelectorAll('.qa-card');
