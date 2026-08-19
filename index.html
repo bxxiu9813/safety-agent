@@ -1905,34 +1905,43 @@
             filterQA();
         }
     }
-/* ===== 本地瀏覽計數器 (localStorage) ===== */
-    function initLocalCounter() {
+/* ===== 全院同步雲端計數器 (CounterAPI) ===== */
+    function initGlobalCounter() {
         const countEl = document.getElementById('visitCount');
         if (!countEl) return;
 
-        // 💡 可自訂初始基準值（例如先前已有約 1 人次查閱，可自行調整此數字）
-        const BASE_COUNT = 1; 
+        // 雲端 API 網址
+        const apiUrl = 'https://api.counterapi.dev/v1/cych-patient-safety-tpr/page-visits/up';
 
-        // 取得目前電腦儲存的瀏覽次數
-        let currentCount = localStorage.getItem('cych_tpr_page_visits');
-
-        if (!currentCount) {
-            // 首次開啟時設定為基準值
-            currentCount = BASE_COUNT;
-        } else {
-            // 重新整理或開啟時，次數自動 +1
-            currentCount = parseInt(currentCount, 10) + 1;
-        }
-
-        // 儲存最新的次數
-        localStorage.setItem('cych_tpr_page_visits', currentCount);
-
-        // 顯示在畫面上並加上千分號（例如 250 次）
-        countEl.innerText = currentCount.toLocaleString();
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.count) {
+                    // 所有人顯示完全同步的數字（自動附帶千分號）
+                    countEl.innerText = data.count.toLocaleString();
+                } else {
+                    fallbackLocal();
+                }
+            })
+            .catch(error => {
+                console.warn('雲端計數器連線受限，切換至備用計數模式:', error);
+                fallbackLocal();
+            });
     }
 
-    // 執行計數
-    initLocalCounter();
+    // 當網路尚未開通時的自動備援機制（避免畫面顯示「載入中」）
+    function fallbackLocal() {
+        const countEl = document.getElementById('visitCount');
+        if (!countEl) return;
+        
+        let count = localStorage.getItem('cych_tpr_page_visits') || 350;
+        count = parseInt(count, 10) + 1;
+        localStorage.setItem('cych_tpr_page_visits', count);
+        countEl.innerText = count.toLocaleString();
+    }
+
+    // 啟動計數器
+    initGlobalCounter();
 </script>
 
 </body>
