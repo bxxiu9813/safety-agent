@@ -1906,35 +1906,47 @@
         }
     }
     
-/* ===== 全真實雲端計數器 (無假數字、高穩定度服務) ===== */
+/* ===== 全真實雲端計數器 (無假數字、修復連線阻擋) ===== */
     function initGlobalCounter() {
         const countEl = document.getElementById('visitCount');
         if (!countEl) return;
 
         countEl.innerText = '載入中...';
 
-        // 使用極度穩定的公共計數服務 (帶入貴院專屬 ID)
-        // 💡 這裡會真實記錄每一次打開網頁的人次
-        const siteId = 'cych-patient-safety-tpr-page';
-        const apiUrl = `https://hits.seeyoufarm.com/api/count/incr/badge.json?url=${siteId}&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false`;
+        // 使用支援 CORS 且極度穩定的免費雲端計數 API
+        const namespace = 'cych-patient-safety-tpr';
+        const key = 'page-visits';
+        const apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/up`;
 
-        fetch(apiUrl)
-            .then(res => res.json())
-            .then(data => {
-                // 直接抓取真實的累加總次數
-                if (data && data.value) {
-                    countEl.innerText = Number(data.value).toLocaleString();
-                    console.log('✅ 雲端真實總次數：', data.value);
-                } else {
-                    countEl.innerText = '數據載入失敗';
-                }
-            })
-            .catch(err => {
-                console.error('❌ 連線異常:', err);
-                countEl.innerText = '無法連線';
-            });
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP 錯誤！狀態碼: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 解析回傳的真實數字
+            if (data && typeof data.count === 'number') {
+                countEl.innerText = data.count.toLocaleString();
+                console.log('✅ 成功取得真實雲端總瀏覽次數：', data.count);
+            } else {
+                countEl.innerText = '資料格式錯誤';
+            }
+        })
+        .catch(error => {
+            console.error('❌ 雲端 API 讀取失敗:', error);
+            // 只要連不上或被擋，就呈現無法連線，堅持不放假數字
+            countEl.innerText = '無法連線';
+        });
     }
 
+    // 啟動計數
     initGlobalCounter();
 </script>
 
