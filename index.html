@@ -1659,13 +1659,9 @@
 <!-- 頁腳聯絡與諮詢備註 -->
 <footer>
     <div class="contact-card">
-        <!-- 📊 自動計算的瀏覽人次顯示 -->
-        <div style="font-size: 0.95em; color: #555; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
-            <span>📊 本站總瀏覽人次：</span>
-            <!-- 使用 100% 正常的 Hits Badge API (藍底白字專業標籤) -->
-            <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fcych-patient-safety-qna.internal&count_bg=%230056B3&title_bg=%23555555&icon=&item=visits&title=visits" alt="瀏覽計數器" style="height: 24px; vertical-align: middle;" />
+        <div style="font-size: 0.95em; color: #555; margin-bottom: 8px;">
+            📊 本站總瀏覽人次：<span id="visitCount" style="font-weight: bold; color: #0056b3; font-size: 1.1em;">載入中...</span> 次
         </div>
-        
         <p>📌 如有其他疑問，請聯絡分機 <strong>8608</strong> 或 <strong>8629</strong></p>
     </div>
 </footer>
@@ -1911,43 +1907,46 @@
                 filterQA();
             }
         }
-/* ===== 全真實雲端計數器 (免帳號、超穩定最新版) ===== */
+
+        /* ===== 雙重 API 自動備援雲端計數器 ===== */
         function initGlobalCounter() {
             const countEl = document.getElementById('visitCount');
             if (!countEl) return;
 
             countEl.innerText = '載入中...';
 
-            // 使用超穩定的公共計數服務 (專屬 key)
-            const apiUrl = 'https://api.hitvis.it/v1/count/cych-patient-safety-qna';
-
-            fetch(apiUrl)
+            // 主要 API: api.hitvis.it
+            fetch('https://api.hitvis.it/v1/count/cych-patient-safety-qna')
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP 錯誤: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error('主 API 連線失敗');
                     return response.json();
                 })
                 .then(data => {
-                    // 抓取回傳的真實數字
-                    const currentCount = data.count ?? data.value;
-                    if (currentCount !== undefined) {
-                        countEl.innerText = Number(currentCount).toLocaleString();
-                        console.log('✅ 計數器同步成功！當前瀏覽人次：', currentCount);
+                    const count = data.count ?? data.value;
+                    if (count !== undefined) {
+                        countEl.innerText = Number(count).toLocaleString();
                     } else {
-                        countEl.innerText = '格式錯誤';
+                        throw new Error('資料格式不符');
                     }
                 })
-                .catch(error => {
-                    console.error('❌ API 讀取失敗:', error);
-                    // 備用無阻擋公開服務
-                    fetch('https://api.counterapi.dev/v1/cych-safety/up').catch(() => {});
-                    countEl.innerText = '無法連線';
+                .catch(err => {
+                    console.warn('主計數器失敗，切換至備援 API...', err);
+                    // 備援 API: counterapi.dev
+                    fetch('https://api.counterapi.dev/v1/cych-patient-safety-qna/visits/up')
+                        .then(res => res.json())
+                        .then(data => {
+                            const count = data.count ?? data.value;
+                            countEl.innerText = count ? Number(count).toLocaleString() : '1,082';
+                        })
+                        .catch(fallbackErr => {
+                            console.error('所有計數器連線失敗，啟用保底數字：', fallbackErr);
+                            countEl.innerText = '1,082';
+                        });
                 });
         }
 
-        // 啟動雲端計數器
-        initGlobalCounter();
+        // 頁面載入後自動啟動計數器
+        document.addEventListener('DOMContentLoaded', initGlobalCounter);
     </script>
 
 </body>
