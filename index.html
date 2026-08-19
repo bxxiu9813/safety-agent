@@ -1898,25 +1898,34 @@
             filterQA();
         }
     }
-/* ===== 自動瀏覽計數器 (CounterAPI) ===== */
-    // 💡 請將 my-hospital-tpr 改為你醫院特有的名稱（例如: cch-patient-safety-tpr）
-    const counterNamespace = "cych-patient-safety-tpr";
-    const counterKey = "page-visits";
+/* ===== 本地瀏覽計數器 (localStorage) ===== */
+    function initLocalCounter() {
+        const countEl = document.getElementById('visitCount');
+        if (!countEl) return;
 
-    fetch(`https://api.counterapi.dev/v1/${counterNamespace}/${counterKey}/up`)
-        .then(response => response.json())
-        .then(data => {
-            const countEl = document.getElementById('visitCount');
-            if (countEl && data.count) {
-                // toLocaleString() 會自動幫數字加上千分號，例如 1,250 次
-                countEl.innerText = data.count.toLocaleString();
-            }
-        })
-        .catch(error => {
-            console.error('計數器載入失敗:', error);
-            const countEl = document.getElementById('visitCount');
-            if (countEl) countEl.innerText = '統計中';
-        });
+        // 💡 可自訂初始基準值（例如先前已有約 1 人次查閱，可自行調整此數字）
+        const BASE_COUNT = 1; 
+
+        // 取得目前電腦儲存的瀏覽次數
+        let currentCount = localStorage.getItem('cych_tpr_page_visits');
+
+        if (!currentCount) {
+            // 首次開啟時設定為基準值
+            currentCount = BASE_COUNT;
+        } else {
+            // 重新整理或開啟時，次數自動 +1
+            currentCount = parseInt(currentCount, 10) + 1;
+        }
+
+        // 儲存最新的次數
+        localStorage.setItem('cych_tpr_page_visits', currentCount);
+
+        // 顯示在畫面上並加上千分號（例如 250 次）
+        countEl.innerText = currentCount.toLocaleString();
+    }
+
+    // 執行計數
+    initLocalCounter();
 </script>
 
 </body>
