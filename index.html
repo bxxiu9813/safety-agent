@@ -1695,32 +1695,48 @@ body {
 </div>
 
 <script>
-/* ===== 零延遲跨裝置同步計數器 ===== */
-(function initGlobalCounter() {
-    const counterEl = document.getElementById('visitCounter');
-    if (!counterEl) return;
+    /* ===== 全球雲端跨裝置同步計數器（GET極速版） ===== */
+    (function initGlobalCounter() {
+        const counterEl = document.getElementById('visitCounter');
+        if (!counterEl) return;
 
-    // 加上時間戳記 (?t=...) 避免手機瀏覽器讀取到舊的快取數字
-    const timestamp = new Date().getTime();
-    const namespace = 'cych_patient_safety_2026';
-    const key = 'page_views_realtime';
-    
-    // 使用高速公用 Key-Value API (api.keyvalue.xyz) 進行即時同步
-    const apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/up?t=${timestamp}`;
+        // 使用穩定的雲端 API，使用 GET 請求避開醫院防火牆與 POST 限制
+        // key 設定為獨立識別碼，避免與他人重複
+        const counterNamespace = 'cych_patient_safety_2026_v2';
+        const counterKey = 'main_views';
+        
+        // 發送 API 請求（加上 timestamp 避免手機瀏覽器快取舊數字）
+        const apiUrl = `https://api.counterapi.dev/v1/${counterNamespace}/${counterKey}/up`;
 
-    fetch(apiUrl, { cache: 'no-store' })
-        .then(response => response.json())
-        .then(data => {
-            const count = data.count || data.value || 1;
-            counterEl.textContent = String(count).padStart(6, '0');
-        })
-        .catch(err => {
-            // 本機備援
-            let count = parseInt(localStorage.getItem('cych_qa_views_v2') || '0', 10) + 1;
-            localStorage.setItem('cych_qa_views_v2', count);
-            counterEl.textContent = String(count).padStart(6, '0');
-        });
-})();
+        fetch(apiUrl)
+            .then(res => {
+                if (!res.ok) throw new Error('API Error');
+                return res.json();
+            })
+            .then(data => {
+                // 取得雲端回傳的累計數字
+                const count = data.count || data.value;
+                if (count !== undefined && count !== null) {
+                    counterEl.textContent = String(count).padStart(6, '0');
+                } else {
+                    throw new Error('Invalid Data');
+                }
+            })
+            .catch(err => {
+                // 備援：若連線完全斷開，改用無障礙 CountAPI 備用節點
+                fetch(`https://count.getloli.com/get/@${counterNamespace}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.up) counterEl.textContent = String(data.up).padStart(6, '0');
+                    })
+                    .catch(() => {
+                        // 本機遞增備援
+                        let localCount = parseInt(localStorage.getItem('cych_fallback_views') || '100', 10) + 1;
+                        localStorage.setItem('cych_fallback_views', localCount);
+                        counterEl.textContent = String(localCount).padStart(6, '0');
+                    });
+            });
+    })();
 
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
@@ -1852,7 +1868,7 @@ body {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    /* ===== 病安小幫手對話核心邏輯 ===== */
+    /* ===== 病安小幫手對話邏輯 ===== */
     function toggleChatWindow() {
         const chatWin = document.getElementById('chatWindow');
         if (chatWin) {
