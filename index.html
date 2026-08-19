@@ -1910,41 +1910,35 @@
             }
         }
         
-        /* ===== 全真實雲端計數器 (無假數字、修復連線阻擋) ===== */
+/* ===== 全真實雲端計數器 (無假數字、純前端自動同步) ===== */
         function initGlobalCounter() {
             const countEl = document.getElementById('visitCount');
             if (!countEl) return;
 
             countEl.innerText = '載入中...';
 
-            const namespace = 'cych-patient-safety-tpr';
-            const key = 'page-visits';
-            const apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/up`;
+            // 使用全球最穩定的公共點閱 API (專屬識別 Key)
+            const apiUrl = 'https://api.counterapi.dev/v1/cych-safety-tpr-2026/pageviews/up';
 
-            fetch(apiUrl, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP 錯誤！狀態碼: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && typeof data.count === 'number') {
-                    countEl.innerText = data.count.toLocaleString();
-                    console.log('✅ 成功取得真實雲端總瀏覽次數：', data.count);
-                } else {
-                    countEl.innerText = '資料格式錯誤';
-                }
-            })
-            .catch(error => {
-                console.error('❌ 雲端 API 讀取失敗:', error);
-                countEl.innerText = '無法連線';
-            });
+            fetch(apiUrl)
+                .then(res => {
+                    if (!res.ok) throw new Error('伺服器回應異常');
+                    return res.json();
+                })
+                .then(data => {
+                    // 只要成功取得雲端真實數據，就更新顯示
+                    if (data && data.count !== undefined) {
+                        countEl.innerText = Number(data.count).toLocaleString();
+                        console.log('✅ 成功取得真實雲端總瀏覽次數：', data.count);
+                    } else {
+                        countEl.innerText = '無法取得數據';
+                    }
+                })
+                .catch(err => {
+                    console.error('❌ 雲端 API 讀取失敗:', err);
+                    // 堅持不顯示假數字，連不上就顯示無法連線
+                    countEl.innerText = '無法連線';
+                });
         }
 
         // 啟動雲端計數器
