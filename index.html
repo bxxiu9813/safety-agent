@@ -1910,42 +1910,37 @@
             }
         }
         
-/* ===== 全真實雲端計數器 (CounterAPI 最終修正版) ===== */
+/* ===== 全真實雲端計數器 (v2 專用版) ===== */
         function initGlobalCounter() {
             const countEl = document.getElementById('visitCount');
             if (!countEl) return;
 
             countEl.innerText = '載入中...';
 
-            // 你的專屬 Workspace 與 Counter 名稱
-            const workspace = 'cych-patient-safety';
-            const counterName = 'page-visits';
-            
-            // 使用專為前端發起設計的直接點擊端點 (up/hit)
-            const apiUrl = `https://api.counterapi.dev/v1/${workspace}/${counterName}/up`;
+            // 直接使用 v2 的公開 Counter 端點
+            const apiUrl = 'https://api.counterapi.dev/v2/page-visits/up';
 
-            // 移除原本的 headers 限制，改用最純粹的 GET 請求
-            fetch(apiUrl, { mode: 'cors' })
+            fetch(apiUrl)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`連線失敗 HTTP 狀態: ${response.status}`);
+                        throw new Error(`HTTP 狀態碼: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    // 抓取回傳的 count 數字
-                    if (data && typeof data.count === 'number') {
-                        countEl.innerText = data.count.toLocaleString();
-                        console.log('✅ 專屬雲端計數器同步成功！總瀏覽次數：', data.count);
-                    } else if (data && typeof data.value === 'number') {
-                        countEl.innerText = data.value.toLocaleString();
+                    // v2 版本回傳的欄位通常為 count 或 value
+                    const currentCount = data.count ?? data.value;
+                    
+                    if (currentCount !== undefined) {
+                        countEl.innerText = Number(currentCount).toLocaleString();
+                        console.log('✅ 雲端計數器連線成功！當前數字：', currentCount);
                     } else {
                         countEl.innerText = '資料格式錯誤';
                     }
                 })
                 .catch(error => {
                     console.error('❌ API 讀取失敗:', error);
-                    // 堅持無假數字，連不上就明確呈現無法連線
+                    // 堅持無假數字，連不上就呈現無法連線
                     countEl.innerText = '無法連線';
                 });
         }
