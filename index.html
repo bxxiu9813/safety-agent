@@ -1703,38 +1703,24 @@ body {
 </div>
 
 <script>
-/* ===== 穩定單一資料源計數器（防止數字亂跳） ===== */
+/* ===== Google Apps Script 跨裝置真同步計數器 ===== */
 (function initCleanCounter() {
     const counterEl = document.getElementById('visitCounter');
     if (!counterEl) return;
 
-    // 專屬計數器名稱
-    const apiKey = 'cych_patient_safety_official_2026';
-    
-    // 從本地取得上次記憶的最高人次
-    let lastKnownCount = parseInt(localStorage.getItem('cych_max_views') || '1', 10);
+    // 已套用您的 Google Apps Script 專屬部署網址
+    const gasUrl = 'https://script.google.com/macros/s/AKfycbwxTQlXKaUvpEwetg0LIAbZmKNLVnFsIpMKOQ1Aa8zhRcub9LiVEeRvXnZucd0LYmRcJQ/exec';
 
-    fetch(`https://api.counterapi.dev/v1/${apiKey}/views/up`)
+    fetch(gasUrl)
         .then(res => res.json())
         .then(data => {
-            let remoteCount = data.count || data.value;
-            if (remoteCount) {
-                let finalCount = Math.max(remoteCount, lastKnownCount);
-                localStorage.setItem('cych_max_views', finalCount);
-                renderDigits(finalCount);
-            } else {
-                useFallback();
+            if (data && typeof data.count !== 'undefined') {
+                renderDigits(data.count);
             }
         })
-        .catch(() => {
-            useFallback();
+        .catch(err => {
+            console.error('Counter error:', err);
         });
-
-    function useFallback() {
-        lastKnownCount += 1;
-        localStorage.setItem('cych_max_views', lastKnownCount);
-        renderDigits(lastKnownCount);
-    }
 
     function renderDigits(num) {
         const strNum = String(num).padStart(6, '0');
