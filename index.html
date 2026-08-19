@@ -1910,37 +1910,42 @@
             }
         }
         
-/* ===== 全真實雲端計數器 (已帶入專屬 Workspace: cych-patient-safety) ===== */
+/* ===== 全真實雲端計數器 (CounterAPI 最終修正版) ===== */
         function initGlobalCounter() {
             const countEl = document.getElementById('visitCount');
             if (!countEl) return;
 
             countEl.innerText = '載入中...';
 
-            // 帶入你剛剛註冊成功的專屬 Workspace (cych-patient-safety)
+            // 你的專屬 Workspace 與 Counter 名稱
             const workspace = 'cych-patient-safety';
             const counterName = 'page-visits';
+            
+            // 使用專為前端發起設計的直接點擊端點 (up/hit)
             const apiUrl = `https://api.counterapi.dev/v1/${workspace}/${counterName}/up`;
 
-            fetch(apiUrl)
+            // 移除原本的 headers 限制，改用最純粹的 GET 請求
+            fetch(apiUrl, { mode: 'cors' })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`HTTP 狀態碼: ${response.status}`);
+                        throw new Error(`連線失敗 HTTP 狀態: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    // 成功抓取你專屬帳號下的真實數據
+                    // 抓取回傳的 count 數字
                     if (data && typeof data.count === 'number') {
                         countEl.innerText = data.count.toLocaleString();
-                        console.log('✅ 專屬雲端計數器連線成功！當前瀏覽次數：', data.count);
+                        console.log('✅ 專屬雲端計數器同步成功！總瀏覽次數：', data.count);
+                    } else if (data && typeof data.value === 'number') {
+                        countEl.innerText = data.value.toLocaleString();
                     } else {
                         countEl.innerText = '資料格式錯誤';
                     }
                 })
                 .catch(error => {
                     console.error('❌ API 讀取失敗:', error);
-                    // 堅持無假數字
+                    // 堅持無假數字，連不上就明確呈現無法連線
                     countEl.innerText = '無法連線';
                 });
         }
