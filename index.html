@@ -1695,31 +1695,32 @@ body {
 </div>
 
 <script>
-    /* ===== 跨裝置同步計數器（從 0 開始累計，雙端同步） ===== */
-    (function initGlobalCounter() {
-        // 使用新的 key 名稱，讓雲端重置並從 0 開始累計
-        const namespace = 'cych_patient_safety_qa_2026';
-        const key = 'page_views_v0';
-        const counterEl = document.getElementById('visitCounter');
+/* ===== 零延遲跨裝置同步計數器 ===== */
+(function initGlobalCounter() {
+    const counterEl = document.getElementById('visitCounter');
+    if (!counterEl) return;
 
-        // 呼叫雲端計數 API (+1)
-        fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
-            .then(response => response.json())
-            .then(data => {
-                if (counterEl && data.value !== undefined) {
-                    // 自動補零至 6 位數（第一個訪客為 000001）
-                    counterEl.textContent = String(data.value).padStart(6, '0');
-                }
-            })
-            .catch(err => {
-                // 若院內資安擋掉外部 API，自動降級為本機紀錄（從 0 開始）
-                let count = parseInt(localStorage.getItem('cych_qa_views_v0') || '0', 10) + 1;
-                localStorage.setItem('cych_qa_views_v0', count);
-                if (counterEl) {
-                    counterEl.textContent = String(count).padStart(6, '0');
-                }
-            });
-    })();
+    // 加上時間戳記 (?t=...) 避免手機瀏覽器讀取到舊的快取數字
+    const timestamp = new Date().getTime();
+    const namespace = 'cych_patient_safety_2026';
+    const key = 'page_views_realtime';
+    
+    // 使用高速公用 Key-Value API (api.keyvalue.xyz) 進行即時同步
+    const apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/up?t=${timestamp}`;
+
+    fetch(apiUrl, { cache: 'no-store' })
+        .then(response => response.json())
+        .then(data => {
+            const count = data.count || data.value || 1;
+            counterEl.textContent = String(count).padStart(6, '0');
+        })
+        .catch(err => {
+            // 本機備援
+            let count = parseInt(localStorage.getItem('cych_qa_views_v2') || '0', 10) + 1;
+            localStorage.setItem('cych_qa_views_v2', count);
+            counterEl.textContent = String(count).padStart(6, '0');
+        });
+})();
 
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
