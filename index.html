@@ -1905,39 +1905,52 @@
             filterQA();
         }
     }
-/* ===== 全院同步雲端計數器 (CounterAPI) ===== */
+/* ===== 全院同步雲端計數器 (修正完整版) ===== */
     function initGlobalCounter() {
         const countEl = document.getElementById('visitCount');
         if (!countEl) return;
 
-        // 雲端 API 網址
-        const apiUrl = 'https://api.counterapi.dev/v1/cych-patient-safety-tpr/page-visits/up';
+        // 使用 countapi.xyz 的公共免費 API (穩定性更高、無跨網域問題)
+        const apiUrl = 'https://api.countapi.xyz/hit/cych-patient-safety-tpr/page-visits';
 
         fetch(apiUrl)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('網路回應異常');
+                return response.json();
+            })
             .then(data => {
-                if (data && data.count) {
-                    // 所有人顯示完全同步的數字（自動附帶千分號）
-                    countEl.innerText = data.count.toLocaleString();
+                // 抓取回傳的 value 或 count 數字
+                const totalCount = data.value || data.count;
+                
+                if (totalCount !== undefined) {
+                    // 成功抓到雲端數字！所有人顯示完全同步的數字
+                    countEl.innerText = Number(totalCount).toLocaleString();
+                    console.log('✅ 雲端計數器同步成功，目前總人次：', totalCount);
                 } else {
+                    console.warn('⚠️ 雲端資料格式不符，切換至備援');
                     fallbackLocal();
                 }
             })
             .catch(error => {
-                console.warn('雲端計數器連線受限，切換至備用計數模式:', error);
+                console.warn('❌ 雲端計數器連線失敗，切換至備用計數模式:', error);
                 fallbackLocal();
             });
     }
 
-    // 當網路尚未開通時的自動備援機制（避免畫面顯示「載入中」）
+    // 備援機制 (僅在完全斷網或 API 壞掉時啟動)
     function fallbackLocal() {
         const countEl = document.getElementById('visitCount');
         if (!countEl) return;
         
-        let count = localStorage.getItem('cych_tpr_page_visits') || 15;
-        count = parseInt(count, 10) + 1;
-        localStorage.setItem('cych_tpr_page_visits', count);
-        countEl.innerText = count.toLocaleString();
+        // 💡 將 key 名稱加上固定後綴，確保不被舊資料干擾
+        let count = localStorage.getItem('cych_tpr_fallback_count');
+        if (!count) {
+            count = 15; // 預設值
+        } else {
+            count = parseInt(count, 10) + 1;
+        }
+        localStorage.setItem('cych_tpr_fallback_count', count);
+        countEl.innerText = Number(count).toLocaleString();
     }
 
     // 啟動計數器
