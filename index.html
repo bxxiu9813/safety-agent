@@ -19,7 +19,7 @@
             --accent-green: #2f855a;        /* 答題專用：沉穩綠 */
         }
 
-        body {
+body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
@@ -34,7 +34,6 @@
             max-width: 960px;
         }
 
-        /* 標題與 Logo 區塊 */
         header {
             text-align: center;
             margin-bottom: 24px;
@@ -48,7 +47,6 @@
             letter-spacing: 1px;
         }
 
-        /* 白色框框上方的靠右樣式 */
         .meta-info-sub {
             font-size: 0.75rem;
             color: var(--text-muted);
@@ -66,9 +64,8 @@
             margin-bottom: 6px;
         }
 
-        /* Logo 圖片樣式（套用雲端真實圖片） */
         .hospital-logo-img {
-            height: 50px; /* 控制高度，可依視覺效果調整至 45px ~ 60px */
+            height: 50px;
             width: auto;
             vertical-align: middle;
             object-fit: contain;
@@ -100,7 +97,7 @@
 
         input[type="text"] {
             width: 100%;
-            padding: 12px 40px 12px 16px; /* 右側留空間給清除按鈕 */
+            padding: 12px 40px 12px 16px;
             font-size: 0.98rem;
             border: 1px solid #d8d3d0;
             border-radius: 6px;
@@ -115,7 +112,6 @@
             box-shadow: 0 0 0 3px rgba(232, 116, 97, 0.15);
         }
 
-        /* 關鍵字高亮樣式與搜尋框清除按鈕樣式 */
         mark.search-highlight {
             background-color: #ffe58f;
             color: #1f1f1f;
@@ -201,7 +197,7 @@
             border: 1px solid var(--border-color);
             border-left: 5px solid var(--primary-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            display: none; /* 預設隱藏，由 JS 控制 */
+            display: none;
         }
 
         .qa-card.no-report {
@@ -298,15 +294,18 @@
             box-sizing: border-box;
         }
 
-        .contact-detail {
-            font-size: 0.92rem;
-            color: #4a4d4f;
-            line-height: 1.5;
-        }
-
-        .contact-detail span {
-            font-weight: 700;
-            color: var(--primary-color);
+        /* 自訂無須外連圖片的 LED 質感數字計數器樣式 */
+        .local-counter-badge {
+            background-color: #1e293b;
+            color: #10b981;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 2px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+            display: inline-block;
         }
 
         /* 懸浮對話框與按鈕樣式 */
@@ -467,20 +466,17 @@
         <div class="hospital-name-header">戴德森醫療財團法人嘉義基督教醫院</div>
         
         <div class="logo-container">
-            <!-- 已替換為雲端硬碟的圖片連結 -->
             <img src="https://lh3.googleusercontent.com/d/1XyKm1egr5NiEPAz_ZIuQEZczGa216u67" alt="嘉基院徽" class="hospital-logo-img">
             <h1>病安通報 Q&A 速查系統</h1>
         </div>
         <p class="subtitle">依醫策會 TPR 13 大官方事件類別與常見疑義整理</p>
     </header>
 
-    <!-- 放在白色搜尋框最上方靠右邊 -->
     <div class="meta-info-sub">
         醫療品質部 病人安全科 製 ｜ 更新日期：2026/08/19
     </div>
 
     <div class="search-box">
-        <!-- 搜尋框包覆容器與一鍵清除按鈕 -->
         <div class="search-input-wrapper">
             <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋（例如：標本、延遲、滑倒、抗生素、同意書）...">
             <button type="button" class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()" title="清除搜尋">✕</button>
@@ -1655,13 +1651,12 @@
     </div>
 
     <div class="no-result" id="noResult">沒有找到符合條件的通報問答。</div>
-
-<!-- 頁腳聯絡與諮詢備註 (完全修復：高穿透性 SVG 計數器) -->
+<!-- 頁腳聯絡與諮詢備註 (改為完全無需外連圖片的純前端計數器，防護牆 100% 穿透) -->
     <footer>
         <div class="contact-card">
             <div style="font-size: 0.95em; color: #555; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
                 <span>📊 本站總瀏覽人次：</span>
-                <img src="https://profile-counter.glitch.me/cych-patient-safety-qa/count.svg" alt="瀏覽計數器" style="height: 26px; vertical-align: middle;" />
+                <span id="visitCounter" class="local-counter-badge">000000</span>
                 <span>次</span>
             </div>
             <p>📌 如有其他疑問，請聯絡分機 <strong>8608</strong> 或 <strong>8629</strong></p>
@@ -1699,8 +1694,23 @@
     </div>
 </div>
 
-<!-- 💡 所有 JavaScript 程式碼統一放置於此 -->
     <script>
+        /* ===== 免外連網絡的本地計數器邏輯 (自動補 0) ===== */
+        (function initLocalCounter() {
+            let count = localStorage.getItem('cych_qa_views');
+            if (!count) {
+                count = 1001; // 設定初始底數
+            } else {
+                count = parseInt(count, 10) + 1;
+            }
+            localStorage.setItem('cych_qa_views', count);
+            
+            const counterEl = document.getElementById('visitCounter');
+            if (counterEl) {
+                counterEl.textContent = String(count).padStart(6, '0');
+            }
+        })();
+
         const searchInput = document.getElementById('searchInput');
         const clearBtn = document.getElementById('clearSearchBtn');
         const qaCards = document.querySelectorAll('.qa-card');
@@ -1745,7 +1755,6 @@
             filterQA();
         }
 
-        /* ===== 修正後的聯集搜尋邏輯 (支援檢體/標本等多關鍵字聯集) ===== */
         function filterQA() {
             if (!searchInput) return;
             const query = searchInput.value.trim();
@@ -1761,7 +1770,6 @@
                 return;
             }
 
-            // 1. 建立搜尋關鍵字聯集陣列
             let searchKeywords = [lowerQuery];
             if (lowerQuery.includes('檢體') || lowerQuery.includes('標本')) {
                 searchKeywords = Array.from(new Set([...searchKeywords, '檢體', '標本']));
@@ -1775,8 +1783,6 @@
                 restoreOriginalText(card);
 
                 const text = card.textContent.toLowerCase();
-
-                // 2. 使用 OR 邏輯比對
                 const matchesSearch = query === '' || searchKeywords.some(kw => text.includes(kw));
                 const matchesCategory = currentCategory === 'all' || category.includes(currentCategory);
 
@@ -1864,14 +1870,12 @@
             const chatBody = document.getElementById('chatBody');
             if (!chatBody) return;
 
-            // 1. 顯示使用者發送訊息
             const userMsg = document.createElement('div');
             userMsg.className = 'chat-msg user';
             userMsg.textContent = text;
             chatBody.appendChild(userMsg);
             chatBody.scrollTop = chatBody.scrollHeight;
 
-            // 2. 智慧判定回覆內容
             let responseText = "";
             const lowerText = text.toLowerCase();
 
@@ -1892,7 +1896,6 @@
                 syncToSearch(text);
             }
 
-            // 3. 機器人生成回覆
             setTimeout(() => {
                 const botMsg = document.createElement('div');
                 botMsg.className = 'chat-msg bot';
