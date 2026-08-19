@@ -1652,6 +1652,11 @@
     <!-- 頁腳聯絡與諮詢備註 -->
     <footer>
         <div class="contact-card">
+            <!-- 📊 新增：自動計算的瀏覽人次顯示 -->
+            <div style="font-size: 0.9em; color: #555; margin-bottom: 8px;">
+                📊 本站總瀏覽人次：<span id="visitCount" style="font-weight: bold; color: #0056b3; font-size: 1.1em;">載入中...</span> 次
+            </div>
+            
             <div class="contact-detail">
                 📌 如有其他疑問，請聯絡分機 <span>8608</span> 或 <span>8629</span>
             </div>
@@ -1893,6 +1898,25 @@
             filterQA();
         }
     }
+/* ===== 自動瀏覽計數器 (CounterAPI) ===== */
+    // 💡 請將 my-hospital-tpr 改為你醫院特有的名稱（例如: cch-patient-safety-tpr）
+    const counterNamespace = "cych-patient-safety-tpr";
+    const counterKey = "page-visits";
+
+    fetch(`https://api.counterapi.dev/v1/${counterNamespace}/${counterKey}/up`)
+        .then(response => response.json())
+        .then(data => {
+            const countEl = document.getElementById('visitCount');
+            if (countEl && data.count) {
+                // toLocaleString() 會自動幫數字加上千分號，例如 1,250 次
+                countEl.innerText = data.count.toLocaleString();
+            }
+        })
+        .catch(error => {
+            console.error('計數器載入失敗:', error);
+            const countEl = document.getElementById('visitCount');
+            if (countEl) countEl.innerText = '統計中';
+        });
 </script>
 
 </body>
