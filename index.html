@@ -1934,7 +1934,7 @@
         const countEl = document.getElementById('visitCount');
         if (!countEl) return;
         
-        let count = localStorage.getItem('cych_tpr_page_visits') || 350;
+        let count = localStorage.getItem('cych_tpr_page_visits') || 15;
         count = parseInt(count, 10) + 1;
         localStorage.setItem('cych_tpr_page_visits', count);
         countEl.innerText = count.toLocaleString();
